@@ -206,6 +206,7 @@ public:
      * @return The default theme.
      */
     static Theme* getDefault();
+    static void setDefault(Theme *t);
 
     /**
      * Get a style by its ID.

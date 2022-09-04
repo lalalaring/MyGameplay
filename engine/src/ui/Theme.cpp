@@ -90,6 +90,12 @@ Theme* Theme::getDefault()
 	return __defaultTheme;
 }
 
+void Theme::setDefault(Theme* t) {
+    SAFE_RELEASE(__defaultTheme);
+    __defaultTheme = t;
+    t->addRef();
+}
+
 void Theme::finalize()
 {
     SAFE_RELEASE(__defaultTheme);
