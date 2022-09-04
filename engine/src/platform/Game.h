@@ -725,6 +725,9 @@ protected:
      */
     void updateOnce();
 
+
+    RenderPipline* getRenderPipline();
+
 private:
 
     struct ShutdownListener : public TimeListener

@@ -179,11 +179,18 @@ void GLRenderer::renderMesh(Mesh* mesh, Material* _material,
         for (Material* material = _material; material != NULL; material = material->getNextPass())
         {
             material->bind(view, node);
+            if (!mesh->_vertexAttributeArray) {
+                mesh->_vertexAttributeArray = VertexAttributeBinding::create(mesh, material->getEffect());
+            }
+            bindVertexAttributeObj(mesh->_vertexAttributeArray);
+
             GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
             if (!view->wireframe || !drawWireframe(mesh))
             {
                 GL_ASSERT(glDrawArrays(mesh->getPrimitiveType(), 0, mesh->getVertexCount()));
             }
+
+            unbindVertexAttributeObj(mesh->_vertexAttributeArray);
             material->unbind();
         }
         return;
@@ -202,11 +209,18 @@ void GLRenderer::renderMesh(Mesh* mesh, Material* _material,
         for (; material != NULL; material = material->getNextPass())
         {
             material->bind(view, node);
+            if (!mesh->_vertexAttributeArray) {
+                mesh->_vertexAttributeArray = VertexAttributeBinding::create(mesh, material->getEffect());
+            }
+            bindVertexAttributeObj(mesh->_vertexAttributeArray);
+
             GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, part->_indexBuffer));
             if (!view->wireframe || !drawWireframe(part))
             {
                 GL_ASSERT(glDrawElements(part->getPrimitiveType(), part->getIndexCount(), part->getIndexFormat(), 0));
             }
+
+            unbindVertexAttributeObj(mesh->_vertexAttributeArray);
             material->unbind();
         }
     }
@@ -224,6 +238,11 @@ void GLRenderer::deleteMesh(Mesh* mesh) {
             MeshPart* part = mesh->getPart(i);
             deleteMeshPart(part);
         }
+    }
+    if (mesh->_vertexAttributeArray) {
+        deleteVertexAttributeObj(mesh->_vertexAttributeArray);
+        SAFE_DELETE(mesh->_vertexAttributeArray);
+        mesh->_vertexAttributeArray = NULL;
     }
 }
 
@@ -320,6 +339,15 @@ void GLRenderer::renderMeshBatch(MeshBatch* mbatch, RenderView* view, Node* node
     {
         material->bind(view, node);
 
+        if (!mbatch->_vertexAttributeArray || mbatch->_vertexAttributeArray->_isDirty) {
+            if (mbatch->_vertexAttributeArray) {
+                deleteVertexAttributeObj(mbatch->_vertexAttributeArray);
+                SAFE_DELETE(mbatch->_vertexAttributeArray);
+            }
+            mbatch->_vertexAttributeArray = VertexAttributeBinding::create(mbatch->_vertexFormat, mbatch->_vertices, material->getEffect());
+        }
+        bindVertexAttributeObj(mbatch->_vertexAttributeArray);
+
         if (mbatch->_indexed)
         {
             GL_ASSERT(glDrawElements(mbatch->_primitiveType, mbatch->_indexCount, GL_UNSIGNED_SHORT, (GLvoid*)mbatch->_indices));
@@ -329,7 +357,16 @@ void GLRenderer::renderMeshBatch(MeshBatch* mbatch, RenderView* view, Node* node
             GL_ASSERT(glDrawArrays(mbatch->_primitiveType, 0, mbatch->_vertexCount));
         }
 
+        unbindVertexAttributeObj(mbatch->_vertexAttributeArray);
         material->unbind();
+    }
+}
+
+void GLRenderer::deleteMeshBatch(MeshBatch* mesh) {
+    if (mesh->_vertexAttributeArray) {
+        deleteVertexAttributeObj(mesh->_vertexAttributeArray);
+        SAFE_DELETE(mesh->_vertexAttributeArray);
+        mesh->_vertexAttributeArray = NULL;
     }
 }
 

@@ -2,9 +2,10 @@
 #include "Material.h"
 #include "base/FileSystem.h"
 #include "ShaderProgram.h"
-#include "VertexAttributeBinding.h"
 #include "base/Properties.h"
 #include "scene/Node.h"
+#include "MaterialParameter.h"
+
 namespace gameplay
 {
     static bool isMaterialKeyword(const char* str)
@@ -151,7 +152,7 @@ namespace gameplay
             default:
             {
                 // Assume this is a parameter auto-binding.
-                renderState->setParameterAutoBinding(name, properties->getString());
+                //renderState->setParameterAutoBinding(name, properties->getString());
             }
             break;
             }

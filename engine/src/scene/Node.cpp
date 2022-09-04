@@ -421,7 +421,7 @@ void Node::update(float elapsedTime)
     for (size_t i = 0; i < _components.size(); i++)
     {
         Drawable *d = dynamic_cast<Drawable*>(_components[i]);
-        d->update(elapsedTime);
+        if (d) d->update(elapsedTime);
     }
 
     fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(Node, update), dynamic_cast<void*>(this), elapsedTime);

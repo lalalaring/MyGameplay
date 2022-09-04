@@ -68,7 +68,6 @@
     <ClInclude Include="src\base\SerializerBinary.h" />
     <ClInclude Include="src\base\SerializerJson.h" />
     <ClInclude Include="src\loader\GltfLoader.h" />
-    <ClInclude Include="src\material\MaterialLoader.cpp" />
     <ClInclude Include="src\material\ShaderProgram.h" />
     <ClInclude Include="src\material\Image.h" />
     <ClInclude Include="src\material\Material.h" />
@@ -197,6 +196,7 @@
     <ClCompile Include="src\base\SerializerBinary.cpp" />
     <ClCompile Include="src\base\SerializerJson.cpp" />
     <ClCompile Include="src\loader\GltfLoader.cpp" />
+    <ClCompile Include="src\material\MaterialLoader.cpp" />
     <ClCompile Include="src\material\ShaderProgram.cpp" />
     <ClCompile Include="src\material\Image.cpp" />
     <ClCompile Include="src\material\Material.cpp" />

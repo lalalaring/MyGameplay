@@ -492,6 +492,10 @@ void Game::updateOnce()
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, update), elapsedTime);
 }
 
+RenderPipline* Game::getRenderPipline() {
+    return _renderPipline;
+}
+
 void Game::setViewport(const Rectangle& viewport)
 {
     _viewport = viewport;

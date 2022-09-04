@@ -71,12 +71,12 @@ public:
     /**
      * Binds this vertex array object.
      */
-    void bind();
+    //void bind();
 
     /**
      * Unbinds this vertex array object.
      */
-    void unbind();
+    //void unbind();
 
 public:
 
@@ -113,6 +113,7 @@ public:
     std::vector<VertexAttribute> _attributes;
     Mesh* _mesh;
     ShaderProgram* _effect;
+    bool _isDirty;
 };
 
 }

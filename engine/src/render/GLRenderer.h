@@ -24,6 +24,7 @@ public:
 	void deleteMesh(Mesh* mesh);
 
 	void renderMeshBatch(MeshBatch* mbatch, RenderView* view, Node* node);
+	void deleteMeshBatch(MeshBatch* mesh);
 	void updateMeshPart(MeshPart* part, unsigned int indexStart, unsigned int indexCount);
 
 	

@@ -10,7 +10,6 @@ namespace gameplay
 {
 
 class NodeCloneContext;
-class VertexAttributeBinding;
 class RenderView;
 class MaterialParameter;
 class ShaderProgram;
@@ -133,14 +132,14 @@ public:
      *
      * @param binding The VertexAttributeBinding to set (or NULL to remove an existing binding).
      */
-    void setVertexAttributeBinding(VertexAttributeBinding* binding);
+    //void setVertexAttributeBinding(VertexAttributeBinding* binding);
 
     /**
      * Sets a vertex attribute binding for this pass.
      *
      * @return The vertex attribute binding for this pass.
      */
-    VertexAttributeBinding* getVertexAttributeBinding() const;
+    //VertexAttributeBinding* getVertexAttributeBinding() const;
 
     /**
      * Binds the render state for this pass.
@@ -314,12 +313,6 @@ private:
      */
     static Material* create(Properties* materialProperties, PassCallback callback, void* cookie);
 
-    /**
-     * Loads render state from the specified properties object.
-     */
-    static void loadRenderState(Material* renderState, Properties* properties);
-
-
     bool initialize(RenderView* view);
     void bindCamera(RenderView* view, Node* node);
 
@@ -328,7 +321,7 @@ private:
     std::string vertexShaderPath;
     std::string fragmentShaderPath;
     std::string shaderDefines;
-    VertexAttributeBinding* _vertexAttributeBinding;
+    //VertexAttributeBinding* _vertexAttributeBinding;
     Material *_nextPass;
 
     //MaterialParamBinding _paramBinding;

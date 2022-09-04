@@ -231,7 +231,6 @@
     <ClInclude Include="src\3rd\utf8.h" />
     <ClInclude Include="src\ui\FontEngine.h" />
     <ClInclude Include="src\material\StateBlock.h" />
-    <ClInclude Include="src\material\MaterialLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ai\AIAgent.cpp" />
@@ -355,5 +354,6 @@
     <ClCompile Include="src\3rd\utf8.c" />
     <ClCompile Include="src\ui\FontEngine.cpp" />
     <ClCompile Include="src\material\StateBlock.cpp" />
+    <ClCompile Include="src\material\MaterialLoader.cpp" />
   </ItemGroup>
 </Project>

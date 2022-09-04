@@ -125,22 +125,8 @@ void Model::setMaterial(Material* material, int partIndex)
     // Release existing material and binding.
     if (oldMaterial)
     {
-        oldMaterial->setVertexAttributeBinding(NULL);
+        //oldMaterial->setVertexAttributeBinding(NULL);
         SAFE_RELEASE(oldMaterial);
-    }
-
-    if (material)
-    {
-        // Hookup vertex attribute bindings for all passes in the new material.
-        VertexAttributeBinding* b = VertexAttributeBinding::create(_mesh, material->getEffect());
-        material->setVertexAttributeBinding(b);
-        SAFE_RELEASE(b);
-
-        // Apply node binding for the new material.
-        /*if (_node)
-        {
-            setMaterialNodeBinding(material);
-        }*/
     }
 }
 

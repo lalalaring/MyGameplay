@@ -2,7 +2,6 @@
 #include "Material.h"
 #include "base/FileSystem.h"
 #include "ShaderProgram.h"
-#include "VertexAttributeBinding.h"
 #include "base/Properties.h"
 #include "scene/Node.h"
 #include "MaterialParameter.h"
@@ -12,7 +11,7 @@ namespace gameplay
 extern void loadRenderState(Material* renderState, Properties* properties);
 
 Material::Material() :
-    _shaderProgram(NULL), _vertexAttributeBinding(NULL), _nextPass(NULL)
+    _shaderProgram(NULL), _nextPass(NULL)
 {
 }
 
@@ -25,7 +24,7 @@ Material::~Material()
     }
 
     SAFE_RELEASE(_shaderProgram);
-    SAFE_RELEASE(_vertexAttributeBinding);
+    //SAFE_RELEASE(_vertexAttributeBinding);
     SAFE_RELEASE(_nextPass);
 }
 
@@ -317,23 +316,23 @@ ShaderProgram* Material::getEffect() const {
     return _shaderProgram;
 }
 
-void Material::setVertexAttributeBinding(VertexAttributeBinding* binding)
-{
-    SAFE_RELEASE(_vertexAttributeBinding);
-
-    if (binding)
-    {
-        _vertexAttributeBinding = binding;
-        binding->addRef();
-    }
-
-    if (_nextPass) _nextPass->setVertexAttributeBinding(binding);
-}
-
-VertexAttributeBinding* Material::getVertexAttributeBinding() const
-{
-    return _vertexAttributeBinding;
-}
+//void Material::setVertexAttributeBinding(VertexAttributeBinding* binding)
+//{
+//    SAFE_RELEASE(_vertexAttributeBinding);
+//
+//    if (binding)
+//    {
+//        _vertexAttributeBinding = binding;
+//        binding->addRef();
+//    }
+//
+//    if (_nextPass) _nextPass->setVertexAttributeBinding(binding);
+//}
+//
+//VertexAttributeBinding* Material::getVertexAttributeBinding() const
+//{
+//    return _vertexAttributeBinding;
+//}
 
 void Material::bind(RenderView* view, Node* node)
 {
@@ -356,19 +355,19 @@ void Material::bind(RenderView* view, Node* node)
     _state.bind();
 
     // If we have a vertex attribute binding, bind it
-    if (_vertexAttributeBinding)
+    /*if (_vertexAttributeBinding)
     {
         _vertexAttributeBinding->bind();
-    }
+    }*/
 }
 
 void Material::unbind()
 {
     // If we have a vertex attribute binding, unbind it
-    if (_vertexAttributeBinding)
+    /*if (_vertexAttributeBinding)
     {
         _vertexAttributeBinding->unbind();
-    }
+    }*/
 }
 
 Serializable* Material::createObject() {

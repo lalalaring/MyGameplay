@@ -7,7 +7,7 @@ namespace gameplay
 
 MeshBatch::MeshBatch(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, Material* material, bool indexed, unsigned int initialCapacity, unsigned int growSize)
     : _vertexFormat(vertexFormat), _primitiveType(primitiveType), _material(material), _indexed(indexed), _capacity(0), _growSize(growSize),
-    _vertexCapacity(0), _indexCapacity(0), _vertexCount(0), _indexCount(0), _vertices(NULL), _verticesPtr(NULL), _indices(NULL), _indicesPtr(NULL), _started(false)
+    _vertexCapacity(0), _indexCapacity(0), _vertexCount(0), _indexCount(0), _vertices(NULL), _verticesPtr(NULL), _indices(NULL), _indicesPtr(NULL), _started(false), _vertexAttributeArray(NULL)
 {
     resize(initialCapacity);
 }
@@ -17,6 +17,7 @@ MeshBatch::~MeshBatch()
     SAFE_RELEASE(_material);
     SAFE_DELETE_ARRAY(_vertices);
     SAFE_DELETE_ARRAY(_indices);
+    Renderer::cur()->deleteMeshBatch(this);
 }
 
 MeshBatch* MeshBatch::create(const VertexFormat& vertexFormat, Mesh::PrimitiveType primitiveType, const char* materialPath, bool indexed, unsigned int initialCapacity, unsigned int growSize)
@@ -108,9 +109,9 @@ void MeshBatch::updateVertexAttributeBinding()
     GP_ASSERT(_material);
 
     // Update our vertex attribute bindings.
-    VertexAttributeBinding* b = VertexAttributeBinding::create(_vertexFormat, _vertices, _material->getEffect());
-    _material->setVertexAttributeBinding(b);
-    SAFE_RELEASE(b);
+    if (_vertexAttributeArray) {
+        _vertexAttributeArray->_isDirty = true;
+    }
 }
 
 unsigned int MeshBatch::getCapacity() const

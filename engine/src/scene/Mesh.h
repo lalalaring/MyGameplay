@@ -16,6 +16,7 @@ typedef unsigned int VertexBufferHandle;
 class MeshPart;
 class Material;
 class Model;
+class VertexAttributeBinding;
 
 /**
  * Defines a mesh supporting various vertex formats and 1 or more
@@ -379,6 +380,7 @@ public:
     VertexBufferHandle _vertexBuffer;
     void* _vertexData;
     bool _vertexDataDirty;
+    VertexAttributeBinding *_vertexAttributeArray;
 };
 
 }

@@ -11,7 +11,7 @@ namespace gameplay
 
 Mesh::Mesh(const VertexFormat& vertexFormat) 
     : _vertexFormat(vertexFormat), _vertexCount(0), _vertexBuffer(0), _primitiveType(TRIANGLES), 
-      _dynamic(false), _vertexData(0), _vertexDataDirty(false)
+      _dynamic(false), _vertexData(0), _vertexDataDirty(false), _vertexAttributeArray(NULL)
 {
 }
 

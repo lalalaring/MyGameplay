@@ -7,12 +7,14 @@ namespace gameplay
 {
 
 class Material;
+class VertexAttributeBinding;
 
 /**
  * Defines a class for rendering multiple mesh into a single draw call on the graphics device.
  */
 class MeshBatch
 {
+    friend class GLRenderer;
 public:
 
     /**
@@ -184,6 +186,7 @@ public:
     unsigned int _vertexCount;
     unsigned int _indexCount;
     bool _indexed;
+    VertexAttributeBinding* _vertexAttributeArray;
 };
 
 }

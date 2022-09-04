@@ -17,6 +17,7 @@ RenderPipline::RenderPipline(Renderer* renderer) : renderer(renderer), _scene(NU
 
 void RenderPipline::render(Scene* scene, Camera* camera, Rectangle* viewport) {
     _scene = scene;
+    _camera = camera;
     // Clear the color and depth buffers
     renderer->clear(Renderer::CLEAR_COLOR_DEPTH, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0);
 
@@ -32,7 +33,7 @@ bool RenderPipline::buildRenderQueues(Node *node) {
     if (model)
     {
         // Perform view-frustum culling for this node
-        if (__viewFrustumCulling && !node->getBoundingSphere().intersects(_scene->getActiveCamera()->getFrustum()))
+        if (__viewFrustumCulling && !node->getBoundingSphere().intersects(_camera->getFrustum()))
             return true;
 
         // Determine which render queue to insert the node into

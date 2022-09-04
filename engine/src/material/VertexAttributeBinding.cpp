@@ -22,7 +22,7 @@ namespace gameplay
 static std::vector<VertexAttributeBinding*> __vertexAttributeBindingCache;
 
 VertexAttributeBinding::VertexAttributeBinding() :
-    _handle(0), _mesh(NULL), _effect(NULL)
+    _handle(0), _mesh(NULL), _effect(NULL), _isDirty(false)
 {
 }
 
@@ -38,8 +38,6 @@ VertexAttributeBinding::~VertexAttributeBinding()
     SAFE_RELEASE(_mesh);
     SAFE_RELEASE(_effect);
     //SAFE_DELETE_ARRAY(_attributes);
-
-    Renderer::cur()->deleteVertexAttributeObj(this);
 }
 
 VertexAttributeBinding* VertexAttributeBinding::create(Mesh* mesh, ShaderProgram* effect)
@@ -175,20 +173,7 @@ VertexAttributeBinding* VertexAttributeBinding::create(Mesh* mesh, const VertexF
         offset += e.size * sizeof(float);
     }
 
-    b->bind();
-    b->unbind();
-
     return b;
-}
-
-void VertexAttributeBinding::bind()
-{
-    Renderer::cur()->bindVertexAttributeObj(this);
-}
-
-void VertexAttributeBinding::unbind()
-{
-    Renderer::cur()->unbindVertexAttributeObj(this);
 }
 
 }

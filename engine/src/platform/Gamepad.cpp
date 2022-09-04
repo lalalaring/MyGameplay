@@ -259,7 +259,7 @@ void Gamepad::draw()
 {
     if (_form && _form->isEnabled())
     {
-        _form->draw();
+        _form->draw(NULL);
     }
 }
 

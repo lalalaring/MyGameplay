@@ -14,6 +14,7 @@ namespace gameplay {
 		Scene* _scene;
 		std::vector<Node*> _renderQueues[2];
 		bool __viewFrustumCulling;
+		Camera* _camera;
 	public:
 		RenderPipline(Renderer* renderer);
 		Renderer* getRenderer() { return renderer; }

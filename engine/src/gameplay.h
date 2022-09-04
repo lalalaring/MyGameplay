@@ -61,6 +61,7 @@
 #include "scene/Terrain.h"
 #include "scene/TerrainPatch.h"
 #include "scene/AssetManager.h"
+#include "render/RenderPipline.h"
 
 // Audio
 #include "audio/AudioController.h"

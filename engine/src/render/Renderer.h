@@ -44,9 +44,11 @@ public:
 	virtual void renderMesh(Mesh *mesh, Material* _material,
 										unsigned int _partCount,
 										Material** _partMaterials, RenderView *view, Node *node) = 0;
-										virtual void deleteMesh(Mesh* mesh) = 0;
+	virtual void deleteMesh(Mesh* mesh) = 0;
 
 	virtual void renderMeshBatch(MeshBatch* mbatch, RenderView* view, Node* node) = 0;
+    virtual void deleteMeshBatch(MeshBatch* mesh) = 0;
+
 	virtual void updateMeshPart(MeshPart* part, unsigned int indexStart, unsigned int indexCount) = 0;
 public:
     virtual void updateTexture(Texture* texture) = 0;
@@ -71,9 +73,9 @@ public:
     virtual void bindProgram(ShaderProgram* effect) = 0;
     virtual void bindUniform(MaterialParameter *value, Uniform *uniform, ShaderProgram* effect) = 0;
 
-    virtual void bindVertexAttributeObj(VertexAttributeBinding *vertextAttribute) = 0;
-    virtual void unbindVertexAttributeObj(VertexAttributeBinding* vertextAttribute) = 0;
-    virtual void deleteVertexAttributeObj(VertexAttributeBinding* vertextAttribute) = 0;
+    //virtual void bindVertexAttributeObj(VertexAttributeBinding *vertextAttribute) = 0;
+    //virtual void unbindVertexAttributeObj(VertexAttributeBinding* vertextAttribute) = 0;
+    //virtual void deleteVertexAttributeObj(VertexAttributeBinding* vertextAttribute) = 0;
 };
 
 }
