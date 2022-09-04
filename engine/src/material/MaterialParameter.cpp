@@ -28,14 +28,14 @@ void MaterialParameter::clearValue()
     {
     case MaterialParameter::SAMPLER:
         if (_value.samplerValue)
-            const_cast<Texture::Sampler*>(_value.samplerValue)->release();
+            const_cast<Texture*>(_value.samplerValue)->release();
         break;
     case MaterialParameter::SAMPLER_ARRAY:
         if (_value.samplerArrayValue)
         {
             for (unsigned int i = 0; i < _count; ++i)
             {
-                const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->release();
+                const_cast<Texture*>(_value.samplerArrayValue[i])->release();
             }
         }
         break;
@@ -85,12 +85,12 @@ const char* MaterialParameter::getName() const
     return _name.c_str();
 }
 
-Texture::Sampler* MaterialParameter::getSampler(unsigned int index) const
+Texture* MaterialParameter::getSampler(unsigned int index) const
 {
     if (_type == MaterialParameter::SAMPLER)
-        return const_cast<Texture::Sampler*>(_value.samplerValue);
+        return const_cast<Texture*>(_value.samplerValue);
     if (_type == MaterialParameter::SAMPLER_ARRAY && index < _count)
-        return const_cast<Texture::Sampler*>(_value.samplerArrayValue[index]);
+        return const_cast<Texture*>(_value.samplerArrayValue[index]);
     return NULL;
 }
 
@@ -228,36 +228,36 @@ void MaterialParameter::setValue(const Matrix* values, unsigned int count)
     _type = MaterialParameter::MATRIX;
 }
 
-void MaterialParameter::setValue(const Texture::Sampler* sampler)
+void MaterialParameter::setValue(const Texture* sampler)
 {
     GP_ASSERT(sampler);
     clearValue();
 
-    const_cast<Texture::Sampler*>(sampler)->addRef();
+    const_cast<Texture*>(sampler)->addRef();
     _value.samplerValue = sampler;
     _type = MaterialParameter::SAMPLER;
 }
 
-void MaterialParameter::setValue(const Texture::Sampler** samplers, unsigned int count)
+void MaterialParameter::setValue(const Texture** samplers, unsigned int count)
 {
     GP_ASSERT(samplers);
     clearValue();
 
     for (unsigned int i = 0; i < count; ++i)
     {
-        const_cast<Texture::Sampler*>(samplers[i])->addRef();
+        const_cast<Texture*>(samplers[i])->addRef();
     }
     _value.samplerArrayValue = samplers;
     _count = count;
     _type = MaterialParameter::SAMPLER_ARRAY;
 }
 
-Texture::Sampler* MaterialParameter::setValue(const char* texturePath, bool generateMipmaps)
+Texture* MaterialParameter::setValue(const char* texturePath, bool generateMipmaps)
 {
     GP_ASSERT(texturePath);
     clearValue();
 
-    Texture::Sampler* sampler = Texture::Sampler::create(texturePath, generateMipmaps);
+    Texture* sampler = Texture::create(texturePath, generateMipmaps);
     if (sampler)
     {
         _value.samplerValue = sampler;
@@ -416,25 +416,25 @@ void MaterialParameter::setMatrixArray(const Matrix* values, unsigned int count,
     _type = MaterialParameter::MATRIX;
 }
 
-Texture::Sampler* MaterialParameter::setSampler(const char* texturePath, bool generateMipmaps)
+Texture* MaterialParameter::setSampler(const char* texturePath, bool generateMipmaps)
 {
     return setValue(texturePath, generateMipmaps);
 }
 
-void MaterialParameter::setSampler(const Texture::Sampler* value)
+void MaterialParameter::setSampler(const Texture* value)
 {
     setValue(value);
 }
 
-void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigned int count, bool copy)
+void MaterialParameter::setSamplerArray(const Texture** values, unsigned int count, bool copy)
 {
     GP_ASSERT(values);
     clearValue();
 
     if (copy)
     {
-        _value.samplerArrayValue = new const Texture::Sampler*[count];
-        memcpy(_value.samplerArrayValue, values, sizeof(Texture::Sampler*) * count);
+        _value.samplerArrayValue = new const Texture*[count];
+        memcpy(_value.samplerArrayValue, values, sizeof(Texture*) * count);
         _dynamic = true;
     }
     else
@@ -444,7 +444,7 @@ void MaterialParameter::setSamplerArray(const Texture::Sampler** values, unsigne
 
     for (unsigned int i = 0; i < count; ++i)
     {
-        const_cast<Texture::Sampler*>(_value.samplerArrayValue[i])->addRef();
+        const_cast<Texture*>(_value.samplerArrayValue[i])->addRef();
     }
 
     _count = count;
@@ -935,12 +935,12 @@ void MaterialParameter::onSerialize(Serializer* serializer) {
         serializer->writeFloatArray("value", _value.floatPtrValue, 16);
         break;
     case MaterialParameter::SAMPLER:
-        serializer->writeObject("value", _value.samplerValue->getTexture());
+        serializer->writeObject("value", (Texture*)_value.samplerValue);
         break;
     case MaterialParameter::SAMPLER_ARRAY:
         serializer->writeList("value", _count);
         for (int i = 0; i < _count; ++i) {
-            serializer->writeObject(NULL, _value.samplerArrayValue[i]->getTexture());
+            serializer->writeObject(NULL, (Texture*)_value.samplerArrayValue[i]);
         }
         serializer->finishColloction();
         break;
@@ -1001,19 +1001,19 @@ void MaterialParameter::onDeserialize(Serializer* serializer) {
     }
     case MaterialParameter::SAMPLER: {
         Texture* tex = dynamic_cast<Texture*>(serializer->readObject("value"));
-        _value.samplerValue = Texture::Sampler::create(tex);
+        _value.samplerValue = tex;
         break;
     }
     case MaterialParameter::SAMPLER_ARRAY: {
         int size = serializer->readList("value");
-        std::vector<Texture::Sampler*> samplaers;
+        std::vector<Texture*> samplaers;
         for (int i = 0; i < size; ++i) {
             Texture* tex = dynamic_cast<Texture*>(serializer->readObject("value"));
-            samplaers.push_back(Texture::Sampler::create(tex));
+            samplaers.push_back(tex);
         }
         serializer->finishColloction();
 
-        setSamplerArray((const Texture::Sampler**)samplaers.data(), size, true);
+        setSamplerArray((const Texture**)samplaers.data(), size, true);
         break;
     }
     }

@@ -32,7 +32,7 @@ public:
 
 	void updateTexture(Texture* texture);
 	void deleteTexture(Texture* texture);
-	void bindTextureSampler(Texture::Sampler* texture);
+	void bindTextureSampler(Texture* texture);
 
 	ShaderProgram* createProgram(ProgramSrc* src);
 	void deleteProgram(ShaderProgram*effect);

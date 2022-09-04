@@ -53,7 +53,7 @@ public:
 public:
     virtual void updateTexture(Texture* texture) = 0;
     virtual void deleteTexture(Texture* texture) = 0;
-    virtual void bindTextureSampler(Texture::Sampler* texture) = 0;
+    virtual void bindTextureSampler(Texture* texture) = 0;
 
 
     virtual FrameBuffer* createFrameBuffer(const char* id, unsigned int width, unsigned int height, Texture::Format format = Texture::RGBA) = 0;

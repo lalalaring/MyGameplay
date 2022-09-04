@@ -261,9 +261,9 @@ Terrain* Terrain::create(HeightField* heightfield, const Vector3& scale,
 
     if (normalMapPath)
     {
-        terrain->_normalMap = Texture::Sampler::create(normalMapPath, true);
+        terrain->_normalMap = Texture::create(normalMapPath, true);
         terrain->_normalMap->setWrapMode(Texture::CLAMP, Texture::CLAMP);
-        GP_ASSERT( terrain->_normalMap->getTexture()->getType() == Texture::TEXTURE_2D );
+        GP_ASSERT( terrain->_normalMap->getType() == Texture::TEXTURE_2D );
     }
 
     float halfWidth = (width - 1) * 0.5f;

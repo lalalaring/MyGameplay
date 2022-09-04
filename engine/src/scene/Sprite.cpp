@@ -42,8 +42,8 @@ Sprite* Sprite::create(const char* imagePath, float width, float height,
     batch->getStateBlock()->setDepthWrite(false);
     batch->getStateBlock()->setDepthTest(true);
     
-    unsigned int imageWidth = batch->getSampler()->getTexture()->getWidth();
-    unsigned int imageHeight = batch->getSampler()->getTexture()->getHeight();
+    unsigned int imageWidth = batch->getSampler()->getWidth();
+    unsigned int imageHeight = batch->getSampler()->getHeight();
     if (width == -1)
         width = imageWidth;
     if (height == -1)
@@ -429,8 +429,8 @@ void Sprite::computeFrames(unsigned int frameStride, unsigned int framePadding)
     
     if (_frameCount < 2)
         return;
-    unsigned int imageWidth = _batch->getSampler()->getTexture()->getWidth();
-    unsigned int imageHeight = _batch->getSampler()->getTexture()->getHeight();
+    unsigned int imageWidth = _batch->getSampler()->getWidth();
+    unsigned int imageHeight = _batch->getSampler()->getHeight();
     float textureWidthRatio = 1.0f / imageWidth;
     float textureHeightRatio = 1.0f / imageHeight;
     
@@ -546,7 +546,7 @@ void Sprite::setBlendMode(BlendMode mode)
     }
 }
 
-Texture::Sampler* Sprite::getSampler() const
+Texture* Sprite::getSampler() const
 {
     return _batch->getSampler();
 }

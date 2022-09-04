@@ -255,7 +255,7 @@ Material* Material::create(const char* vshPath, const char* fshPath, const char*
 
     material->vertexShaderPath = vshPath;
     material->fragmentShaderPath = fshPath;
-    material->shaderDefines = defines;
+    material->shaderDefines = defines == NULL ? "" : defines;
 
     return material;
 }

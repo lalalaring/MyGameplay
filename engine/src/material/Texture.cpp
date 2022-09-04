@@ -11,7 +11,7 @@ namespace gameplay
 static std::vector<Texture*> __textureCache;
 
 Texture::Texture() : _handle(0), _format(UNKNOWN), _type((Texture::Type)0), _width(0), _height(0), _mipmapped(false), _cached(false), _compressed(false),
-    _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT), _minFilter(Texture::NEAREST_MIPMAP_LINEAR), _magFilter(Texture::LINEAR), _data(NULL)
+    _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT), _minFilter(Texture::NEAREST_MIPMAP_LINEAR), _magFilter(Texture::LINEAR), _data(NULL), _generateMipmaps(false)
 {
 }
 
@@ -173,6 +173,10 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
     Renderer::cur()->updateTexture(texture);
     texture->_data = NULL;
     return texture;
+}
+
+void Texture::generateMipmaps() {
+    _generateMipmaps = true;
 }
 
 void Texture::setData(const unsigned char* data)
@@ -409,52 +413,20 @@ void Texture::onDeserialize(Serializer* serializer) {
     _mipmapped = serializer->readBool("mipmap", false);
 }
 
-Texture::Sampler::Sampler(Texture* texture)
-    : _texture(texture), _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT)
-{
-    GP_ASSERT( texture );
-    _minFilter = texture->_minFilter;
-    _magFilter = texture->_magFilter;
-}
-
-Texture::Sampler::~Sampler()
-{
-    SAFE_RELEASE(_texture);
-}
-
-Texture::Sampler* Texture::Sampler::create(Texture* texture)
-{
-    GP_ASSERT( texture );
-    GP_ASSERT( texture->_type == Texture::TEXTURE_2D || texture->_type == Texture::TEXTURE_CUBE );
-    texture->addRef();
-    return new Sampler(texture);
-}
-
-Texture::Sampler* Texture::Sampler::create(const char* path, bool generateMipmaps)
-{
-    Texture* texture = Texture::create(path, generateMipmaps);
-    return texture ? new Sampler(texture) : NULL;
-}
-
-void Texture::Sampler::setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR)
+void Texture::setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR)
 {
     _wrapS = wrapS;
     _wrapT = wrapT;
     _wrapR = wrapR;
 }
 
-void Texture::Sampler::setFilterMode(Filter minificationFilter, Filter magnificationFilter)
+void Texture::setFilterMode(Filter minificationFilter, Filter magnificationFilter)
 {
     _minFilter = minificationFilter;
     _magFilter = magnificationFilter;
 }
 
-Texture* Texture::Sampler::getTexture() const
-{
-    return _texture;
-}
-
-void Texture::Sampler::bind()
+void Texture::bind()
 {
     Renderer::cur()->bindTextureSampler(this);
 }

@@ -392,13 +392,13 @@ int TerrainPatch::addSampler(const char* path)
     int firstAvailableIndex = -1;
     for (size_t i = 0, count = _samplers.size(); i < count; ++i)
     {
-        Texture::Sampler* sampler = _samplers[i];
+        Texture* sampler = _samplers[i];
 
         if (sampler == NULL && firstAvailableIndex == -1)
         {
             firstAvailableIndex = (int)i;
         }
-        else if (sampler->getTexture() == texture)
+        else if (sampler == texture)
         {
             // A sampler was already added for this texture.
             // Increase the ref count for the sampler to indicate that a new
@@ -410,8 +410,8 @@ int TerrainPatch::addSampler(const char* path)
     }
 
     // Add a new sampler to the list
-    Texture::Sampler* sampler = Texture::Sampler::create(texture);
-    texture->release();
+    Texture* sampler = texture;// Texture::Sampler::create(texture);
+    //texture->release();
 
     // This may need to be clamp in some cases to prevent edge bleeding?  Possibly a
     // configuration variable in the future.
@@ -544,7 +544,7 @@ bool TerrainPatch::updateMaterial()
 
         if (_layers.size() > 0) {
             MaterialParameter* parameter = material->getParameter("u_surfaceLayerMaps");
-            parameter->setValue((const Texture::Sampler**)&this->_samplers[0], (unsigned int)this->_samplers.size());
+            parameter->setValue((const Texture**)&this->_samplers[0], (unsigned int)this->_samplers.size());
         }
         if (_terrain && _terrain->_normalMap) {
             MaterialParameter* parameter = material->getParameter("u_normalMap");

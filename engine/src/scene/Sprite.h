@@ -311,7 +311,7 @@ public:
      *
      * @return The texture sampler used when sampling the texture.
      */
-    Texture::Sampler* getSampler() const;
+    Texture* getSampler() const;
     
     /**
      * Gets the StateBlock for the SpriteBatch.

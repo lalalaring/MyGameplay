@@ -194,7 +194,7 @@ namespace gameplay
 
                 // Set the sampler parameter.
                 GP_ASSERT(renderState->getParameter(name));
-                Texture::Sampler* sampler = renderState->getParameter(name)->setValue(path.c_str(), mipmap);
+                Texture* sampler = renderState->getParameter(name)->setValue(path.c_str(), mipmap);
                 if (sampler)
                 {
                     sampler->setWrapMode(wrapS, wrapT, wrapR);

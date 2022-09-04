@@ -335,7 +335,7 @@ private:
     HeightField* _heightfield;
     Vector3 _localScale;
     std::vector<TerrainPatch*> _patches;
-    Texture::Sampler* _normalMap;
+    Texture* _normalMap;
     unsigned int _flags;
     mutable Matrix _inverseWorldMatrix;
     mutable unsigned int _dirtyFlags;

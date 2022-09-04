@@ -244,8 +244,8 @@ void ParticleEmitter::setTexture(Texture* texture, BlendMode blendMode)
 
 Texture* ParticleEmitter::getTexture() const
 {
-    Texture::Sampler* sampler = _spriteBatch ? _spriteBatch->getSampler() : NULL;
-    return sampler? sampler->getTexture() : NULL;
+    Texture* sampler = _spriteBatch ? _spriteBatch->getSampler() : NULL;
+    return sampler;
 }
 
 void ParticleEmitter::setParticleCountMax(unsigned int max)
@@ -1029,7 +1029,7 @@ unsigned int ParticleEmitter::draw(RenderView* view)
 Drawable* ParticleEmitter::clone(NodeCloneContext& context)
 {
     // Create a clone of this emitter
-    ParticleEmitter* clone = ParticleEmitter::create(_spriteBatch->getSampler()->getTexture(),
+    ParticleEmitter* clone = ParticleEmitter::create(_spriteBatch->getSampler(),
                                                      _spriteBlendMode, _particleCountMax);
     // Clone properties
     clone->setEmissionRate(_emissionRate);

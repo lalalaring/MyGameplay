@@ -144,7 +144,7 @@ private:
     unsigned int _column;
     std::vector<Level*> _levels;
     std::set<Layer*, LayerCompare> _layers;
-    std::vector<Texture::Sampler*> _samplers;
+    std::vector<Texture*> _samplers;
     mutable BoundingBox _boundingBox;
     mutable BoundingBox _boundingBoxWorld;
     mutable Camera* _camera;

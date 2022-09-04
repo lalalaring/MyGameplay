@@ -20,7 +20,7 @@ class Texture : public Ref, public Serializable
 {
     friend class Sampler;
     friend class CompressedTexture;
-
+    friend class GLRenderer;
 public:
 
     /**
@@ -84,96 +84,6 @@ public:
         NEGATIVE_Z
     };
     
-    /**
-     * Defines a texture sampler.
-     *
-     * A texture sampler is basically an instance of a texture that can be
-     * used to sample a texture from a material. In addition to the texture
-     * itself, a sampler stores per-instance texture state information, such
-     * as wrap and filter modes.
-     */
-    class Sampler : public Ref
-    {
-        friend class Texture;
-
-    public:
-
-        /**
-         * Destructor.
-         */
-        virtual ~Sampler();
-
-        /**
-         * Creates a sampler for the specified texture.
-         *
-         * @param texture The texture.
-         *
-         * @return The new sampler.
-         * @script{create}
-         */
-        static Sampler* create(Texture* texture);
-
-        /**
-         * Creates a sampler for the specified texture.
-         *
-         * @param path Path to the texture to create a sampler for.
-         * @param generateMipmaps True to force a full mipmap chain to be generated for the texture, false otherwise.
-         *
-         * @return The new sampler.
-         * @script{create}
-         */
-        static Sampler* create(const char* path, bool generateMipmaps = false);
-
-        /**
-         * Sets the wrap mode for this sampler.
-         *
-         * @param wrapS The horizontal wrap mode.
-         * @param wrapT The vertical wrap mode.
-         * @param wrapR The depth wrap mode.
-         */
-        void setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR = REPEAT);
-
-        /**
-         * Sets the texture filter modes for this sampler.
-         *
-         * @param minificationFilter The texture minification filter.
-         * @param magnificationFilter The texture magnification filter.
-         */
-        void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
-
-        /**
-         * Gets the texture for this sampler.
-         *
-         * @return The texture for this sampler.
-         */
-        Texture* getTexture() const;
-
-        /**
-         * Binds the texture of this sampler to the renderer and applies the sampler state.
-         */
-        void bind();
-
-    private:
-
-        /**
-         * Constructor.
-         */
-        Sampler(Texture* texture);
-
-        /**
-         * Hidden copy assignment operator.
-         */
-        Sampler& operator=(const Sampler&);
-
-        Texture* _texture;
-    public:
-        Wrap _wrapS;
-        Wrap _wrapT;
-        Wrap _wrapR;
-        Filter _minFilter;
-        Filter _magFilter;
-    };
-
     /**
      * Creates a texture from the given image resource.
      *
@@ -287,7 +197,7 @@ public:
     /**
      * Generates a full mipmap chain for this texture if it isn't already mipmapped.
      */
-    //void generateMipmaps();
+    void generateMipmaps();
 
     /**
      * Determines if this texture currently contains a full mipmap chain.
@@ -338,6 +248,27 @@ public:
      */
     void onDeserialize(Serializer* serializer);
 
+    /**
+     * Sets the wrap mode for this sampler.
+     *
+     * @param wrapS The horizontal wrap mode.
+     * @param wrapT The vertical wrap mode.
+     * @param wrapR The depth wrap mode.
+     */
+    void setWrapMode(Wrap wrapS, Wrap wrapT, Wrap wrapR = REPEAT);
+
+    /**
+     * Sets the texture filter modes for this sampler.
+     *
+     * @param minificationFilter The texture minification filter.
+     * @param magnificationFilter The texture magnification filter.
+     */
+    void setFilterMode(Filter minificationFilter, Filter magnificationFilter);
+
+    /**
+     * Binds the texture of this sampler to the renderer and applies the sampler state.
+     */
+    void bind();
 private:
 
     /**
@@ -372,8 +303,10 @@ private:
     Wrap _wrapS;
     Wrap _wrapT;
     Wrap _wrapR;
-    
+
     Filter _magFilter;
+
+    bool _generateMipmaps;
 
     //int _internalFormat;
     //unsigned int _texelType;

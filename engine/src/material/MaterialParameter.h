@@ -59,7 +59,7 @@ public:
      *
      * @return The texture sampler or NULL if this MaterialParameter is not a sampler type.
      */
-    Texture::Sampler* getSampler(unsigned int index = 0) const;
+    Texture* getSampler(unsigned int index = 0) const;
 
     /**
      * Sets the value of this parameter to a float value.
@@ -124,14 +124,14 @@ public:
     /**
      * Sets the value of this parameter to the specified texture sampler.
      */
-    void setValue(const Texture::Sampler* sampler);
+    void setValue(const Texture* sampler);
 
     /**
      * Sets the value of this parameter to the specified texture sampler array.
      *
      * @script{ignore}
      */
-    void setValue(const Texture::Sampler** samplers, unsigned int count);
+    void setValue(const Texture** samplers, unsigned int count);
 
     /**
      * Loads a texture sampler from the specified path and sets it as the value of this parameter.
@@ -141,7 +141,7 @@ public:
      *
      * @return The texture sampler that was set for this material parameter.
      */
-    Texture::Sampler* setValue(const char* texturePath, bool generateMipmaps);
+    Texture* setValue(const char* texturePath, bool generateMipmaps);
 
     /**
      * Stores a float value in this parameter.
@@ -247,14 +247,14 @@ public:
      *
      * @return The texture sampler that was set for this material parameter.
      */
-    Texture::Sampler* setSampler(const char* texturePath, bool generateMipmaps);
+    Texture* setSampler(const char* texturePath, bool generateMipmaps);
 
     /**
      * Stores a Sampler value in this parameter.
      *
      * @param value The value to set.
      */
-    void setSampler(const Texture::Sampler* value);
+    void setSampler(const Texture* value);
 
     /**
      * Stores an array of Sampler values in this parameter.
@@ -266,7 +266,7 @@ public:
      *      of the MaterialParameter).
      * @script{ignore}
      */
-    void setSamplerArray(const Texture::Sampler** values, unsigned int count, bool copy = false);
+    void setSamplerArray(const Texture** values, unsigned int count, bool copy = false);
 
     /**
      * Binds the return value of a class method to this material parameter.
@@ -487,9 +487,9 @@ public:
         /** @script{ignore} */
         int* intPtrValue;
         /** @script{ignore} */
-        const Texture::Sampler* samplerValue;
+        const Texture* samplerValue;
         /** @script{ignore} */
-        const Texture::Sampler** samplerArrayValue;
+        const Texture** samplerArrayValue;
         /** @script{ignore} */
         //MethodBinding* method;
     } _value;

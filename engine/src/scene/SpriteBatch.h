@@ -325,7 +325,7 @@ public:
      * effect. This can be modified for controlling sampler setting such as
      * filtering modes.
      */
-    Texture::Sampler* getSampler() const;
+    Texture* getSampler() const;
 
     /**
      * Gets the StateBlock for the SpriteBatch.
@@ -414,7 +414,7 @@ private:
     bool clipSprite(const Rectangle& clip, float& x, float& y, float& width, float& height, float& u1, float& v1, float& u2, float& v2);
 
     MeshBatch* _batch;
-    Texture::Sampler* _sampler;
+    Texture* _sampler;
     bool _customEffect;
     float _textureWidthRatio;
     float _textureHeightRatio;

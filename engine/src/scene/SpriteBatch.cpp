@@ -108,8 +108,8 @@ SpriteBatch* SpriteBatch::create(Texture* texture, ShaderProgram* effect, unsign
     material->getStateBlock()->setBlendDst(StateBlock::BLEND_ONE_MINUS_SRC_ALPHA);
 
     // Bind the texture to the material as a sampler
-    Texture::Sampler* sampler = Texture::Sampler::create(texture);
-    material->getParameter(samplerUniform->getName())->setValue(sampler);
+    //Texture::Sampler* sampler = Texture::Sampler::create(texture);
+    material->getParameter(samplerUniform->getName())->setValue(texture);
     
     // Define the vertex format for the batch
     VertexFormat::Element vertexElements[] =
@@ -126,7 +126,8 @@ SpriteBatch* SpriteBatch::create(Texture* texture, ShaderProgram* effect, unsign
 
     // Create the batch
     SpriteBatch* batch = new SpriteBatch();
-    batch->_sampler = sampler;
+    texture->addRef();
+    batch->_sampler = texture;
     batch->_customEffect = customEffect;
     batch->_batch = meshBatch;
     batch->_textureWidthRatio = 1.0f / (float)texture->getWidth();
@@ -390,7 +391,7 @@ StateBlock* SpriteBatch::getStateBlock() const
     return _batch->getMaterial()->getStateBlock();
 }
 
-Texture::Sampler* SpriteBatch::getSampler() const
+Texture* SpriteBatch::getSampler() const
 {
     return _sampler;
 }
