@@ -363,11 +363,11 @@ bool AudioBuffer::loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStr
     stream->rewind();
 
     if (streamed) {
-        int data_used = 0;
-        static unsigned char data[STREAMING_BUFFER_SIZE];
-        stream->read((char*)data, STREAMING_BUFFER_SIZE);
+        int data_size = stream->length();
+        unsigned char* data = new unsigned char[data_size];
+        stream->read((char*)data, data_size);
         int error;
-        stb_vorbis* v = stb_vorbis_open_pushdata(data, STREAMING_BUFFER_SIZE, &data_used, &error, NULL);
+        stb_vorbis* v = stb_vorbis_open_memory(data, data_size, &error, NULL);
         if (!v) {
             GP_ERROR("Failed to open ogg file.");
             return false;
@@ -379,33 +379,27 @@ bool AudioBuffer::loadOgg(Stream* stream, ALuint buffer, bool streamed, AudioStr
         else
             format = AL_FORMAT_STEREO16;
 
-        stream->seek(data_used);
-
         streamState->dataStart = 0;
         streamState->dataSize = stream->length();
         streamState->format = format;
         streamState->frequency = sample_rate;
         streamState->oggFile = v;
 
-        while (true) {
-            float** output = NULL;
-            int samples = 0;
-            int channels;
-            int bytesRead = stream->read((char*)data, STREAMING_BUFFER_SIZE);
-            int used = stb_vorbis_decode_frame_pushdata(v, (unsigned char*)data, bytesRead, &channels, &output, &samples);
-            data_used += used;
-            stream->seek(data_used);
+        static short* decoded[STREAMING_BUFFER_SIZE];
+        int numBytes = STREAMING_BUFFER_SIZE * 2;
+        auto outSamples = (unsigned)stb_vorbis_get_samples_short_interleaved(v, v->channels, (short*)decoded, STREAMING_BUFFER_SIZE);
+        unsigned outBytes = (outSamples * v->channels) << 1u;
+        if (outBytes < STREAMING_BUFFER_SIZE)
+        {
+            numBytes -= outBytes;
+            stb_vorbis_seek_start(v);
+            outSamples =
+                (unsigned)stb_vorbis_get_samples_short_interleaved(v, v->channels, (short*)(decoded + outBytes), numBytes >> 1u);
 
-            if (samples > 0) {
-                AL_CHECK(alBufferData(buffer, format, output, samples*channels*2, sample_rate));
-                break;
-            }
-
-            if (STREAMING_BUFFER_SIZE != bytesRead) {
-                stb_vorbis_flush_pushdata(v);
-                break;
-            }
+            outBytes += (outSamples * v->channels) << 1u;
         }
+
+        AL_CHECK(alBufferData(buffer, format, decoded, outBytes, sample_rate));
         return true;
     }
     else {
@@ -466,29 +460,24 @@ bool AudioBuffer::streamData(ALuint buffer, bool looped)
     }
     else if (_streamStateOgg.get())
     {
-        long pos = _fileStream->position();
-        ALsizei bytesRead = _fileStream->read(buffers, sizeof(char), STREAMING_BUFFER_SIZE);
+        stb_vorbis* v = (stb_vorbis*)_streamStateOgg->oggFile;
 
-        stb_vorbis* info = (stb_vorbis*)_streamStateOgg->oggFile;
+        static short* decoded[STREAMING_BUFFER_SIZE];
+        int numBytes = STREAMING_BUFFER_SIZE*2;
+        auto outSamples = (unsigned)stb_vorbis_get_samples_short_interleaved(v, v->channels, (short*)decoded, STREAMING_BUFFER_SIZE);
+        unsigned outBytes = (outSamples * v->channels) << 1u;
+        if (outBytes < STREAMING_BUFFER_SIZE && looped)
+        {
+            numBytes -= outBytes;
+            stb_vorbis_seek_start(v);
+            outSamples =
+                (unsigned)stb_vorbis_get_samples_short_interleaved(v, v->channels, (short*)(decoded + outBytes), numBytes >> 1u);
 
-        float **output = NULL;
-        int samples;
-        int channels;
-        int used = stb_vorbis_decode_frame_pushdata(info, (unsigned char*)buffers, bytesRead, &channels, &output, &samples);
-
-        _fileStream->seek(pos+used);
-
-        if (samples > 0) {
-            AL_CHECK(alBufferData(buffer, _streamStateOgg->format, output, samples*channels*2, _streamStateOgg->frequency));
-        }
-        
-        if (bytesRead != STREAMING_BUFFER_SIZE) {
-            stb_vorbis_flush_pushdata(info);
-            if (looped)
-                _fileStream->seek(_streamStateOgg->dataStart, SEEK_SET);
+            outBytes += (outSamples * v->channels) << 1u;
         }
 
-        return (bytesRead > 0) || looped;
+        AL_CHECK(alBufferData(buffer, _streamStateOgg->format, decoded, outBytes, _streamStateOgg->frequency));
+        return (outBytes > 0) || looped;
     }
     
     return false;

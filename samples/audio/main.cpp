@@ -9,7 +9,7 @@ class TriangleApp : public Game, Control::Listener {
 
     void initialize() {
 
-        _audioEngine = AudioSource::create("res/audio/engine_loop.ogg", true);
+        _audioEngine = AudioSource::create("res/audio/engine_loop.ogg", false);
         _audioEngine->setLooped(true);
         _audioEngine->play();
     }
