@@ -131,7 +131,7 @@ public:
     virtual bool eof();
     virtual size_t length();
     virtual long int position();
-    virtual bool seek(long int offset, int origin);
+    virtual bool seek(long int offset, int origin = SEEK_SET);
     virtual bool rewind();
 
     static FileStream* create(const char* filePath, const char* mode);

@@ -193,7 +193,7 @@ public:
      * 
      * @see canSeek()
      */
-    virtual bool seek(long int offset, int origin) = 0;
+    virtual bool seek(long int offset, int origin = SEEK_SET) = 0;
 
     /**
      * Moves the file pointer to the start of the file.

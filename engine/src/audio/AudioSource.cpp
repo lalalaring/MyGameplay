@@ -211,7 +211,8 @@ bool AudioSource::isLooped() const
 
 void AudioSource::setLooped(bool looped)
 {
-    AL_CHECK(alSourcei(_alSource, AL_LOOPING, (looped && !isStreamed()) ? AL_TRUE : AL_FALSE));
+    int v = (looped && !isStreamed()) ? AL_TRUE : AL_FALSE;
+    AL_CHECK(alSourcei(_alSource, AL_LOOPING, v));
     if (AL_LAST_ERROR())
     {
         GP_ERROR("Failed to set audio source's looped attribute with error: %d", AL_LAST_ERROR());

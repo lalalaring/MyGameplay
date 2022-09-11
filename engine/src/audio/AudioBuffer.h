@@ -58,7 +58,7 @@ private:
         unsigned int dataSize;
         ALuint format;
         ALuint frequency;
-        OggVorbis_File oggFile;
+        void *oggFile;
     };
 
     enum { STREAMING_BUFFER_QUEUE_SIZE = 3 };
