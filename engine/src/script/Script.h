@@ -8,7 +8,7 @@
 
 // Scripting
 using std::va_list;
-#include <lua/lua.hpp>
+
 
 namespace gameplay
 {

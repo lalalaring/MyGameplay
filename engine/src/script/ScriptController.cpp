@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 
+
 #ifndef GP_NO_LUA_BINDINGS
 #include "lua/lua_all_bindings.h"
 #else
@@ -729,7 +730,6 @@ void ScriptController::initialize()
 
 #ifndef GP_NO_LUA_BINDINGS
     lua_RegisterAllBindings();
-#endif
 
     // Append to the LUA_PATH to allow scripts to be found in the resource folder on all platforms
     appendLuaPath(_lua, FileSystem::getResourcePath());
@@ -760,6 +760,7 @@ void ScriptController::initialize()
         if (luaL_dostring(_lua, argsStr.c_str()))
             GP_ERROR("Failed to pass command-line arguments with error: '%s'.", lua_tostring(_lua, -1));
     }
+#endif
 }
 
 void ScriptController::finalize()

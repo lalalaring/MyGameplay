@@ -4,6 +4,9 @@
 #include "Script.h"
 #include "platform/Game.h"
 
+#define LUA_COMPAT_APIINTCASTS
+#include <lua.hpp>
+
 namespace gameplay
 {
 
