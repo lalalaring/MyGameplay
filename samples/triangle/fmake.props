@@ -1,4 +1,4 @@
-name = samples-audio
+name = samples-triangle
 summary = samples
 outType = exe
 version = 1.0

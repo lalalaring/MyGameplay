@@ -24,7 +24,7 @@ extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LP
     return result;
 }
 #else 
-int main() {
+extern "C" int main() {
     Game* game = Game::getInstance();
     Platform* platform = Platform::create(game);
     GP_ASSERT(platform);
