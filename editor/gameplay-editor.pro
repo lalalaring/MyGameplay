@@ -56,18 +56,44 @@ FORMS += \
 
 RESOURCES += gameplay-editor.qrc
 
-INCLUDEPATH += src
-INCLUDEPATH += ../gameplay/src
-INCLUDEPATH += ../external-deps/include
+
+INCLUDEPATH += src \
+  $$(FMAKE_REPO)/lib/cpp/glew-1.0-release/include \
+  $$(FMAKE_REPO)/lib/cpp/openal-1.22.2-release/include \
+  $$(FMAKE_REPO)/lib/cpp/bullet-3.24-release/include \
+  $$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-release/include \
+  $$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-release/include \
+  $$(FMAKE_REPO)/lib/cpp/ljs-1.0-release/include \
+  $$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-release/include \
+
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glew-1.0-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/openal-1.22.2-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/bullet-3.24-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/ljs-1.0-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-release/lib
+
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glew-1.0-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/openal-1.22.2-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/bullet-3.24-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/ljs-1.0-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-debug/lib
+
+LIBS += -lmygameplay
+LIBS += -lglew
+LIBS += -lopenal
+LIBS += -lbullet
+LIBS += -lfreetype
+LIBS += -llibjson
+LIBS += -lljs
 
 win32 {
     DEFINES += _WINDOWS WIN32
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
     INCLUDEPATH += $$(VULKAN_SDK)/Include
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/../gameplay/Debug/debug/ -lgameplay
-    CONFIG(release, debug|release): LIBS += -L$$PWD/../gameplay/Release/release/ -lgameplay
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/../external-deps/lib/windows/x86_64/Debug/ -lgameplay-deps
-    CONFIG(release, debug|release): LIBS += -L$$PWD/../external-deps/lib/windows/x86_64/Release/ -lgameplay-deps
     LIBS += -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -limm32 -limagehlp -lversion -lwinmm -lxinput
 #    LIBS += -L$$(VULKAN_SDK)/Lib -lvulkan-1
     LIBS += -lOpenGL32 -lGLU32
@@ -97,9 +123,6 @@ linux {
     INCLUDEPATH += /usr/include/libpng12
     INCLUDEPATH += /usr/include/harfbuzz
     INCLUDEPATH += $$(VULKAN_SDK)/include
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/../gameplay/Debug/ -lgameplay
-    CONFIG(release, debug|release): LIBS += -L$$PWD/../gameplay/Release/ -lgameplay
-    LIBS += -L$$PWD/../external-deps/lib/linux/x86_64/ -lgameplay-deps
     LIBS += -lrt -ldl -lX11 -lpthread -lgtk-x11-2.0 -lglib-2.0 -lgobject-2.0 -lxcb -lsndio
     LIBS += -L$$(VULKAN_SDK)/lib/ -lvulkan
 }
@@ -107,10 +130,6 @@ linux {
 macx {
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
     INCLUDEPATH += $$(HOME)/vulkansdk-macos-1.0.69.0/macOS/include
-    CONFIG(debug, debug|release): LIBS += -L$$PWD/../gameplay/Debug/ -lgameplay
-    CONFIG(release, debug|release):LIBS += -L$$PWD/../gameplay/Release/ -lgameplay
-    LIBS += -L$$PWD/../external-deps/lib/macos/x86_64/ -lgameplay-deps
-    LIBS += -L$$PWD/../external-deps/lib/macos/x86_64/ -lgameplay-deps
     LIBS += -L/usr/lib -liconv
     LIBS += -F$$(HOME)/vulkansdk-macos-1.0.69.0/MoltenVK/macOS -framework MoltenVK
     LIBS += -F/System/Library/Frameworks -framework Metal
