@@ -9,6 +9,7 @@
 namespace gameplay
 {
 class GltfLoader {
+public:
 	Scene* load(const std::string &file);
 };
 }

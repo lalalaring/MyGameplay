@@ -4,7 +4,7 @@
 
 using namespace gameplay;
 
-class TriangleApp : public Game, Control::Listener {
+class App : public Game, Control::Listener {
     AudioSource * _audioEngine;
 
     void initialize() {
@@ -32,7 +32,7 @@ class TriangleApp : public Game, Control::Listener {
     }
 };
 
-TriangleApp instance;
+App instance;
 
 //int main()
 //{

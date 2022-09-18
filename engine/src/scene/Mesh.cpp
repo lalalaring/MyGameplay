@@ -324,6 +324,9 @@ void Mesh::setBoundingBox(const BoundingBox& box)
 
 const BoundingSphere& Mesh::getBoundingSphere() const
 {
+    if (_boundingSphere.radius == 0) {
+        ((Mesh*)this)->computeBounds();
+    }
     return _boundingSphere;
 }
 
@@ -421,4 +424,75 @@ Mesh* Mesh::read(Stream* file) {
 }
 
 
+void Mesh::computeBounds()
+{
+    // If we have a Model with a MeshSkin associated with it,
+    // compute the bounds from the skin - otherwise compute
+    // it from the local mesh data.
+    /*if (model && model->getSkin())
+    {
+        model->getSkin()->computeBounds();
+        return;
+    }*/
+
+    //LOG(2, "Computing bounds for mesh: %s\n", getId().c_str());
+
+    _boundingBox.min.x = _boundingBox.min.y = _boundingBox.min.z = FLT_MAX;
+    _boundingBox.max.x = _boundingBox.max.y = _boundingBox.max.z = -FLT_MAX;
+    _boundingSphere.center.x = _boundingSphere.center.y = _boundingSphere.center.z = 0.0f;
+    _boundingSphere.radius = 0.0f;
+
+
+    int positionOffset = 0;
+    for (int i = 0; i < _vertexFormat.getElementCount(); ++i) {
+        if (_vertexFormat.getElement(i).usage == VertexFormat::POSITION) {
+            break;
+        }
+        positionOffset += _vertexFormat.getElement(i).size*4;
+    }
+
+    for (int i = 0; i < _vertexCount; ++i)
+    {
+        float *p = (float*)((char*)_vertexData + (i * getVertexSize()) + positionOffset);
+        float x = p[0];
+        float y = p[1];
+        float z = p[2];
+
+        // Update min/max for this vertex
+        if (x < _boundingBox.min.x)
+            _boundingBox.min.x = x;
+        if (y < _boundingBox.min.y)
+            _boundingBox.min.y = y;
+        if (z < _boundingBox.min.z)
+            _boundingBox.min.z = z;
+        if (x > _boundingBox.max.x)
+            _boundingBox.max.x = x;
+        if (y > _boundingBox.max.y)
+            _boundingBox.max.y = y;
+        if (z > _boundingBox.max.z)
+            _boundingBox.max.z = z;
+    }
+
+    // Compute center point
+    _boundingSphere.center = _boundingBox.getCenter();
+
+    // Compute radius by looping through all points again and finding the max
+    // distance between the center point and each vertex position
+    for (int i = 0; i < _vertexCount; ++i)
+    {
+        float* p = (float*)((char*)_vertexData + (i * getVertexSize()) + positionOffset);
+        float x = p[0];
+        float y = p[1];
+        float z = p[2];
+    
+        float d = _boundingSphere.center.distanceSquared(Vector3(x, y, z));
+        if (d > _boundingSphere.radius)
+        {
+            _boundingSphere.radius = d;
+        }
+    }
+
+    // Convert squared distance to distance for radius
+    _boundingSphere.radius = sqrt(_boundingSphere.radius);
+}
 }

@@ -366,6 +366,8 @@ private:
      */
     Mesh& operator=(const Mesh&);
 
+    void computeBounds();
+
     std::string _url;
     std::string _name;
     const VertexFormat _vertexFormat;

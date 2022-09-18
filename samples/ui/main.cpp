@@ -4,7 +4,7 @@
 
 using namespace gameplay;
 
-class TriangleApp : public Game, Control::Listener {
+class App : public Game, Control::Listener {
     Form* form;
     Label* label;
     Button* button;
@@ -61,7 +61,7 @@ class TriangleApp : public Game, Control::Listener {
 
 };
 
-TriangleApp instance;
+App instance;
 
 //int main()
 //{

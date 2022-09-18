@@ -49,7 +49,7 @@ private:
 				if (!old) {
 					attributeUnique[attr->name] = attr->data;
 				}
-				if (old != attr->data) {
+				else if (old != attr->data) {
 					sharedVertexBuf = false;
 					goto label1;
 				}
@@ -190,6 +190,8 @@ private:
 		Model* model = Model::create(mesh);
 
 		//model->setMaterial();
+		Material *mat = model->setMaterial("res/shaders/min.vert", "res/shaders/min.frag");
+		mat->getParameter("u_diffuseColor")->setVector4(Vector4(1.0, 0.0, 0.0, 1.0));
 
 		return model;
 	}
@@ -206,6 +208,11 @@ private:
 			if (m) {
 				node->addComponent(m);
 			}
+		}
+
+		for (int i = 0; i < cnode->children_count; ++i) {
+			Node* child = loadNode(cnode->children[i]);
+			node->addChild(child);
 		}
 
 		return node;

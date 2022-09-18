@@ -58,7 +58,7 @@ static Mesh* createCubeMesh(float size = 1.0f)
     return mesh;
 }
 
-class TriangleApp : public Game {
+class App : public Game {
     Scene* _scene;
     Camera* _camera;
 
@@ -135,7 +135,7 @@ class TriangleApp : public Game {
 
 };
 
-TriangleApp instance;
+App instance;
 
 //int main()
 //{
