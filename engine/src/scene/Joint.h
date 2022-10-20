@@ -49,7 +49,7 @@ public:
      */
     const Matrix& getInverseBindPose() const;
 
-protected:
+//protected:
 
     /**
      * Constructor.

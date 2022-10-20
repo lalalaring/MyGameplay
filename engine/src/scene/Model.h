@@ -167,7 +167,7 @@ public:
      */
     void setNode(Node* node);
 
-private:
+//private:
 
     /**
      * Constructor.
@@ -207,7 +207,7 @@ private:
     //void setMaterialNodeBinding(Material *m);
 
     void validatePartCount();
-
+private:
     Mesh* _mesh;
     Material* _material;
     std::vector<Material*> _partMaterials;

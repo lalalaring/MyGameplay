@@ -334,7 +334,7 @@ void Scene::visitNode(Node* node, T* instance, bool (T::*visitMethod)(Node*))
     }
 
     // Recurse for all children.
-    for (size_t i=0; i<node->getChildCount(); ++i) {
+    for (int i=0; i<node->getChildCount(); ++i) {
         Node *child = node->getChild(i);
         visitNode(child, instance, visitMethod);
     }

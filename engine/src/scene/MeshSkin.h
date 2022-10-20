@@ -126,7 +126,7 @@ public:
         return name;
     }
 
-private:
+//private:
 
     /**
      * Constructor.
@@ -184,9 +184,11 @@ private:
      * Clears the list of joints and releases each joint.
      */
     void clearJoints();
-
+private:
     Matrix _bindShape;
     std::vector<Joint*> _joints;
+
+    //根骨，唯一的用处是计算node的boundBox。
     Joint* _rootJoint;
 
     //std::vector<std::string> _jointsIdRef;
@@ -196,6 +198,8 @@ private:
     // Pointer to the root node of the mesh skin.
     // The purpose is so that the joint hierarchy doesn't need to be in the scene.
     // If the joints are not in the scene then something has to hold a reference to it.
+    // _rootJoint所在树的root。Node.findNode会通过Skin找到这里来。
+    // 如果_rootNode不为空，则它不能在当前场景中，否则便利的时候会死循环。
     Node* _rootNode;
 
     // Pointer to the array of palette matrices.

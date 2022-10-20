@@ -5,10 +5,13 @@
 #include "../3rd/cgltf.h"
 
 #include "../scene/MeshPart.h"
+#include "../scene/Joint.h"
 
 using namespace gameplay;
 
 class GltfLoaderImp {
+	std::map<cgltf_node*, Node*> nodeMap;
+
 public:
 	Scene * load(const char* file) {
 		cgltf_options options = { 0 };
@@ -196,18 +199,148 @@ private:
 		return model;
 	}
 
-	Node* loadNode(cgltf_node* cnode) {
-		Node* node = Node::create(cnode->name);
+	Joint* getJoint(cgltf_node* cnode) {
+		auto it = nodeMap.find(cnode);
+		if (it != nodeMap.end()) {
+			return dynamic_cast<Joint*>(it->second);
+		}
 		
+		return NULL;
+	}
+
+	MeshSkin* loadSkin(cgltf_skin* cskin) {
+		MeshSkin* skin = new MeshSkin();
+		int num_comp = cgltf_num_components(cskin->inverse_bind_matrices->type);
+		float* matrix = (float*)malloc(cskin->inverse_bind_matrices->count * num_comp * sizeof(float));
+		for (int i = 0; i < cskin->inverse_bind_matrices->count; ++i) {
+			float* out = matrix + (num_comp * i);
+			cgltf_accessor_read_float(cskin->inverse_bind_matrices, i, out, num_comp);
+		}
+
+		skin->setJointCount(cskin->joints_count);
+		for (int i = 0; i < cskin->joints_count; ++i) {
+			Joint* joint = getJoint(cskin->joints[i]);
+			if (!joint) continue;
+			Matrix m(matrix+(i*16));
+			joint->setInverseBindPose(m);
+			skin->setJoint(joint, i);
+		}
+
+		Joint* skeleton = getJoint(cskin->skeleton);
+		assert(skeleton);
+		skeleton->remove();
+		skin->setRootJoint(skeleton);
+		
+		return skin;
+	}
+
+	Animation* loadAnimation(cgltf_animation* canimation) {
+		Animation* animation = new Animation(canimation->name == NULL ? "" : canimation->name);
+		for (int i = 0; i < canimation->channels_count; ++i) {
+			cgltf_animation_channel* cchannel = canimation->channels+i;
+			cgltf_animation_sampler* csampler = cchannel->sampler;
+
+			AnimationTarget* target = nodeMap[cchannel->target_node];
+			if (!target) continue;
+
+			unsigned int propertyId = 0;
+			switch (cchannel->target_path)
+			{
+			case cgltf_animation_path_type_invalid:
+				break;
+			case cgltf_animation_path_type_translation:
+				propertyId = Transform::ANIMATE_TRANSLATE;
+				break;
+			case cgltf_animation_path_type_rotation:
+				propertyId = Transform::ANIMATE_ROTATE;
+				break;
+			case cgltf_animation_path_type_scale:
+				propertyId = Transform::ANIMATE_SCALE;
+				break;
+			case cgltf_animation_path_type_weights:
+				break;
+			case cgltf_animation_path_type_max_enum:
+				break;
+			default:
+				break;
+			}
+			if (propertyId == 0) continue;
+
+			unsigned int keyCount = cchannel->sampler->input->count;
+			if (keyCount != cchannel->sampler->output->count) {
+				printf("ERROR: keyCount != valueCount\n");
+				continue;
+			}
+			//unsigned int num_comp = cgltf_num_components(cchannel->sampler->input->type);
+			//float* fKeyTimes = (float*)malloc(num_comp * sizeof(float));
+			unsigned int* keyTimes = (unsigned int*)malloc(keyCount*sizeof(int));
+			float minTime = cchannel->sampler->input->min[0];
+			float maxTime = cchannel->sampler->input->max[0];
+			for (int i = 0; i < keyCount; ++i) {
+				float out[16];
+				cgltf_accessor_read_float(cchannel->sampler->input, i, out, 1);
+				keyTimes[i] = ((out[0] - minTime) / (maxTime-minTime))*1000;
+			}
+
+			unsigned int interpolationType = 0;
+			switch (cchannel->sampler->interpolation)
+			{
+			case cgltf_interpolation_type_linear:
+				interpolationType = Curve::LINEAR;
+				break;
+			case cgltf_interpolation_type_step:
+				interpolationType = Curve::STEP;
+				break;
+			case cgltf_interpolation_type_cubic_spline:
+				interpolationType = Curve::BSPLINE;
+				break;
+			case cgltf_interpolation_type_max_enum:
+			default:
+				break;
+			}
+			if (interpolationType == 0) break;
+
+			int num_comp = cgltf_num_components(cchannel->sampler->output->type);
+			float* keyValues = (float*)malloc(keyCount*num_comp*sizeof(float));
+			for (int i = 0; i < keyCount; ++i) {
+				float* out = keyValues+(num_comp*i);
+				cgltf_accessor_read_float(cchannel->sampler->output, i, out, num_comp);
+			}
+
+			animation->createChannel(target, propertyId, keyCount, keyTimes, keyValues, interpolationType);
+		}
+		return animation;
+	}
+
+	Node* loadNode(cgltf_node* cnode) {
+		Node* node = NULL;
+		auto it = nodeMap.find(cnode);
+		if (it != nodeMap.end()) {
+			node = it->second;
+		}
+		else {
+			node = Node::create(cnode->name);
+		}
+
 		Matrix m;
 		cgltf_node_transform_local(cnode, m.m);
 		node->setMatrix(m);
 
+		Model* model = NULL;
 		if (cnode->mesh) {
-			Model* m = loadMesh(cnode->mesh);
-			if (m) {
-				node->addComponent(m);
+			model = loadMesh(cnode->mesh);
+			if (model) {
+				node->addComponent(model);
 			}
+		}
+
+		if (cnode->skin) {
+			MeshSkin* skin = loadSkin(cnode->skin);
+			if (!model) {
+				model = new Model();
+				node->addComponent(model);
+			}
+			model->setSkin(skin);
 		}
 
 		for (int i = 0; i < cnode->children_count; ++i) {
@@ -215,6 +348,7 @@ private:
 			node->addChild(child);
 		}
 
+		nodeMap[cnode] = node;
 		return node;
 	}
 
@@ -225,10 +359,25 @@ private:
 		cgltf_scene *cscene = data->scenes;
 		Scene* scene = Scene::create(cscene->name);
 
+		for (int i = 0; i < data->skins_count; ++i) {
+			cgltf_skin* skin = data->skins + i;
+			for (int j = 0; j < skin->joints_count; ++j) {
+				cgltf_node* joint = skin->joints[j];
+				Node* node = Joint::create(joint->name);
+				nodeMap[joint] = node;
+			}
+		}
+
 		for (int i = 0; i < cscene->nodes_count; ++i) {
 			cgltf_node* cnode = cscene->nodes[i];
 			Node* node = loadNode(cnode);
 			scene->addNode(node);
+		}
+
+		for (int i = 0; i < data->animations_count; ++i) {
+			cgltf_animation* ca = data->animations + i;
+			Animation* a = loadAnimation(ca);
+			a->release();
 		}
 
 		return scene;

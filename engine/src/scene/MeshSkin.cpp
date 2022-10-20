@@ -276,7 +276,7 @@ void MeshSkin::write(Stream* file) {
     file->write((char*)&_bindShape.m, sizeof(_bindShape.m));
     file->writeUInt16(_joints.size());
 
-    dynamic_cast<Joint*>(_rootNode)->write(file);
+    dynamic_cast<Joint*>(_rootJoint)->write(file);
 
     for (Joint* join : _joints) {
         file->writeStr(join->getName());
@@ -291,10 +291,10 @@ MeshSkin* MeshSkin::read(Stream* file) {
     int size = file->readUInt16();
     skin->setJointCount(size);
 
-    skin->_rootNode = Joint::read(file);
+    skin->_rootJoint = Joint::read(file);
     for (int i = 0; i < size; ++i) {
         std::string id = file->readStr();
-        Node *node = skin->_rootNode->findNode(id.c_str());
+        Node *node = skin->_rootJoint->findNode(id.c_str());
         Joint *joint = dynamic_cast<Joint*>(node);
         skin->setJoint(joint, i);
     }

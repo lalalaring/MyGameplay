@@ -120,7 +120,7 @@ public:
         this->_id = name;
     }
 
-private:
+public:
 
     /**
      * Defines a channel which holds the target, target property, curve values, and duration.
