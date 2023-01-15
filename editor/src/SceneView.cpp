@@ -122,7 +122,7 @@ QStandardItem* SceneView::createSceneItem(gameplay::Scene *scene)
     QStandardItem* item = new QStandardItem(QIcon(":/res/images/scene-hierarchy.png"), text);
     item->setEditable(false);
     // Associate the scene to the item
-    item->setData(QVariant::fromValue((qlonglong)scene), Qt::UserRole + 1);
+    item->setData(QVariant::fromValue((qlonglong)scene), Qt::UserRole + 2);
 
     return item;
 }

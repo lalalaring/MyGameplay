@@ -334,7 +334,7 @@ PhysicsCollisionObject* PhysicsCollisionObject::load(const std::string& url, Nod
     Properties* properties = Properties::create(url.c_str());
     if (properties == NULL)
     {
-        GP_ERROR("Failed to load scene file '%s'.", url);
+        //GP_ERROR("Failed to load scene file '%s'.", url);
         return NULL;
     }
 

@@ -106,7 +106,6 @@ Properties* Properties::create(const char* url)
 {
     if (!url || strlen(url) == 0)
     {
-        GP_ERROR("Attempting to create a Properties object from an empty URL!");
         return NULL;
     }
 
