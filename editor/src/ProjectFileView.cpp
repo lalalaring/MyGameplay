@@ -1,11 +1,11 @@
-#include "ProjectView.h"
+#include "ProjectFileView.h"
 #include "Project.h"
-#include "ui_ProjectView.h"
+#include "ui_ProjectFileView.h"
 #include <QtWidgets>
 #include <QFileSystemModel>
 
-ProjectView::ProjectView(QWidget* parent) : QWidget(parent), 
-    _ui(new Ui::ProjectView),
+ProjectFileView::ProjectFileView(QWidget* parent) : QWidget(parent),
+    _ui(new Ui::ProjectFileView),
     _project(nullptr),
     _sortFilter(nullptr)
 {
@@ -18,18 +18,18 @@ ProjectView::ProjectView(QWidget* parent) : QWidget(parent),
     connect(_ui->actionOpenFile, SIGNAL(triggered(bool)), _ui->treeView, SLOT(onOpenFile()));
 }
 
-ProjectView::~ProjectView()
+ProjectFileView::~ProjectFileView()
 {
     delete _ui;
     closeProject();
 }
 
-Ui::ProjectView* ProjectView::ui()
+Ui::ProjectFileView* ProjectFileView::ui()
 {
     return _ui;
 }
 
-void ProjectView::openProject(const QString& path)
+void ProjectFileView::openProject(const QString& path)
 {
     closeProject();
     _project = Project::open(path, _ui->treeView);
@@ -72,26 +72,26 @@ void ProjectView::openProject(const QString& path)
     }
 }
 
-void ProjectView::closeProject()
+void ProjectFileView::closeProject()
 {
 }
 
-gameplay::Ptr<Project> ProjectView::getProject() const
+gameplay::Ptr<Project> ProjectFileView::getProject() const
 {
     return _project;
 }
 
-ProjectSortFilterProxyModel* ProjectView::sortFilter() const
+ProjectSortFilterProxyModel* ProjectFileView::sortFilter() const
 {
     return _sortFilter;
 }
 
-void ProjectView::openScene(const QString& path)
+void ProjectFileView::openScene(const QString& path)
 {
     emit sceneOpened(path);
 }
 
-void ProjectView::onSearchTextChanged(const QString& text)
+void ProjectFileView::onSearchTextChanged(const QString& text)
 { 
     //_sortFilter->setFilterRegExp(text);
     _sortFilter->setFilterRegularExpression(text);

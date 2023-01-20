@@ -5,7 +5,7 @@
 #include "Project.h"
 #include "ProjectWizard.h"
 #include "ProjectTreeView.h"
-#include "ProjectView.h"
+#include "ProjectFileView.h"
 #include "SceneView.h"
 #include "PropertiesView.h"
 #include "ui_EditorWindow.h"
@@ -60,7 +60,7 @@ EditorWindow::EditorWindow(QWidget* parent) : QMainWindow(parent),
 
     // Set the project view
     _dockWidgetManager->registerDock(_ui->dockWidgetProject);
-    _projectView = new ProjectView(_ui->dockWidgetProject);
+    _projectView = new ProjectFileView(_ui->dockWidgetProject);
     _ui->dockWidgetProject->setWidget(_projectView);
 
     // Set the scene view

@@ -7,7 +7,7 @@
 
 namespace Ui
 {
-class ProjectView;
+class ProjectFileView;
 }
 //class Project;
 
@@ -15,7 +15,7 @@ class ProjectView;
 /**
  * Defines a project view showing files visible in the project directory.
  */
-class ProjectView : public QWidget
+class ProjectFileView : public QWidget
 {
     Q_OBJECT
     friend class ProjectTreeView;
@@ -27,12 +27,12 @@ public:
      *
      * @param parent The parent widget.
      */
-    explicit ProjectView(QWidget* parent = nullptr);
+    explicit ProjectFileView(QWidget* parent = nullptr);
 
     /**
      * Destructor.
      */
-    ~ProjectView();
+    ~ProjectFileView();
 
     /**
      * Opens a project at the specified path.
@@ -85,7 +85,7 @@ protected:
      *
      * @return The view ui.
      */
-    Ui::ProjectView* ui();
+    Ui::ProjectFileView* ui();
 
     /**
      * Opens a scene at the specified path.
@@ -96,7 +96,7 @@ protected:
 
 private:
 
-    Ui::ProjectView* _ui;
+    Ui::ProjectFileView* _ui;
     gameplay::Ptr<Project> _project;
     ProjectSortFilterProxyModel* _sortFilter;
 };

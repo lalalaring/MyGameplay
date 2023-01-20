@@ -1,12 +1,12 @@
 #include "ProjectTreeView.h"
 #include "Project.h"
-#include "ProjectView.h"
-#include "ui_ProjectView.h"
+#include "ProjectFileView.h"
+#include "ui_ProjectFileView.h"
 #include <QtWidgets>
 
 
 ProjectTreeView::ProjectTreeView(QWidget* parent) : QTreeView(parent), 
-    _projectView(static_cast<ProjectView*>(parent))
+    _projectView(static_cast<ProjectFileView*>(parent))
 {
     setContextMenuPolicy(Qt::ContextMenuPolicy::DefaultContextMenu);
     setSortingEnabled(true);
@@ -38,7 +38,7 @@ void ProjectTreeView::openSelectedItem()
 void ProjectTreeView::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu menu(this);
-    Ui::ProjectView* ui = _projectView->ui();
+    Ui::ProjectFileView* ui = _projectView->ui();
     menu.addAction(ui->actionOpenFile);
     menu.addSeparator();
     menu.addAction(ui->actionNewFile);

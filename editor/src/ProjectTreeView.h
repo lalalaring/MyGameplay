@@ -2,7 +2,7 @@
 
 #include <QTreeView>
 
-class ProjectView;
+class ProjectFileView;
 
 /**
  * Defines the project tree view which display the project 
@@ -47,6 +47,6 @@ private:
 
     void openSelectedItem();
 
-    ProjectView* _projectView;
+    ProjectFileView* _projectView;
     
 };

@@ -8,7 +8,7 @@ class EditorWindow;
 }
 class DockWidgetManager;
 class ProjectWizard;
-class ProjectView;
+class ProjectFileView;
 class GameView;
 class SceneView;
 class PropertiesView;
@@ -189,7 +189,7 @@ private:
     DockWidgetManager* _dockWidgetManager;
     GameView* _gameView;
     ProjectWizard* _projectWizard;
-    ProjectView* _projectView;
+    ProjectFileView* _projectView;
     PropertiesView *_propertiesView;
     SceneView*_sceneView;
     QString _scenePath;

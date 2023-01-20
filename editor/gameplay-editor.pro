@@ -10,9 +10,9 @@ SOURCES += \
     src/EditorWindow.cpp \
     src/GameView.cpp \
     src/Project.cpp \
+    src/ProjectFileView.cpp \
     src/ProjectSortFilterProxyModel.cpp \
     src/ProjectTreeView.cpp \
-    src/ProjectView.cpp \
     src/ProjectWizard.cpp \
     src/ProjectWizardItemDelegate.cpp \
     src/PropertiesCamera.cpp \
@@ -30,9 +30,9 @@ HEADERS += \
     src/EditorWindow.h \
     src/GameView.h \
     src/Project.h \
+    src/ProjectFileView.h \
     src/ProjectSortFilterProxyModel.h \
     src/ProjectTreeView.h \
-    src/ProjectView.h \
     src/ProjectWizard.h \
     src/ProjectWizardItemDelegate.h \
     src/PropertiesCamera.h \
@@ -45,7 +45,7 @@ HEADERS += \
 
 FORMS += \
     src/EditorWindow.ui \
-    src/ProjectView.ui \
+    src/ProjectFileView.ui \
     src/ProjectWizard.ui \
     src/PropertiesCamera.ui \
     src/PropertiesLight.ui \
