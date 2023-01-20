@@ -1,21 +1,20 @@
+#define GLEW_STATIC
+#include <GL/glew.h>
+
 #include "GameView.h"
 #include <QtWidgets>
 
-GameView::GameView(QWidget* parent) : QWidget(parent),
+
+using namespace gameplay;
+
+GameView::GameView(QWidget* parent) : QOpenGLWidget(parent),
     _editor(nullptr),
     //_graphics(nullptr),
     _scene(nullptr),
     _wireframe(false)
 {
-    setAttribute(Qt::WA_NativeWindow, true);
-    setAttribute(Qt::WA_PaintOnScreen, true);
-    setAttribute(Qt::WA_OpaquePaintEvent, true);
-
-    // Initiaize
-    //Input::getInput()->initialize();
-    this->connect(&_timer, SIGNAL(timeout()), SLOT(onTimer()));
-    _timer.start(0);
 }
+
 
 GameView::~GameView()
 {
@@ -32,76 +31,92 @@ void GameView::onSceneChanged()
     _scene = _editor->getScene();
 }
 
-void GameView::onInitialize()
-{
-}
-
-void GameView::onFinalize()
-{
-}
-
-void GameView::onUpdate(float elapsedTime)
-{
-    //_graphics->onUpdate(elapsedTime);
-//    Input::getInput()->update();
-}
-
-void GameView::onTimer()
-{
-    if ((_size != geometry().size()) && (QApplication::mouseButtons() == Qt::NoButton))
+void GameView::initializeGL() {
+    initializeOpenGLFunctions();
+    if (GLEW_OK != glewInit())
     {
-        _size = geometry().size();
-        //_graphics->onResize(geometry().width(), geometry().height());
-        setGeometry(geometry().x(), geometry().y(), geometry().width(), geometry().height());
+        printf("Failed to initialize GLEW.\n");
+        return;
+    }
+
+    /* Version */
+    const GLubyte *vendor = glGetString( GL_VENDOR );
+    const GLubyte *renderer = glGetString( GL_RENDERER );
+    const GLubyte *version = glGetString( GL_VERSION );
+    const GLubyte *shader = glGetString( GL_SHADING_LANGUAGE_VERSION );
+
+    printf("GL Vendor    : %s\n", vendor);
+    printf("GL Renderer  : %s\n", renderer);
+    printf("GL Version   : %s\n", version);
+    printf("GL Shader    : %s\n", shader);
+
+    this->run();
+
+    gameplay::Platform::resizeEventInternal(this->size().width(), this->size().height());
+
+    GltfLoader loader;
+    _scene = loader.load("res/gltf/Triangle.gltf");
+
+    if (_scene->getActiveCamera() == NULL) {
+        Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 1.0f, 10.0f);
+        Node* cameraNode = _scene->addNode("camera");
+        cameraNode->setCamera(camera);
+        cameraNode->translate(0, 0, 5);
+        //_camera = camera;
+        _scene->setActiveCamera(camera);
     }
 }
-
-void GameView::paintEvent(QPaintEvent* evt)
+void GameView::paintGL() {
+    this->frame();
+    //context()->swapBuffers(context()->surface());
+    QWidget::update();
+}
+void GameView::resizeGL(int width, int height) {
+    gameplay::Platform::resizeEventInternal(width, height);
+}
+void GameView::update(float elapsedTime)
 {
-    QPainter p(this);
-    p.setCompositionMode(QPainter::CompositionMode_Clear);
-    p.fillRect(0, 0, width(), height(), Qt::BrushStyle::SolidPattern);
+    _scene->update(elapsedTime);
 }
 
-void GameView::resizeEvent(QResizeEvent* evt)
+void GameView::render(float elapsedTime)
 {
-   //_graphics->onResize(geometry().width(), geometry().height());
-
-   // Make sure mouse button state is 'up' after resize.
-//   Input::getInput()->postMousePressEvent(_mousePosition.x(),
-//                                          _mousePosition.y(),
-//                                          Input::MouseButton::eLeft,
-//                                          false);
-//   Input::getInput()->postMousePressEvent(_mousePosition.x(),
-//                                          _mousePosition.y(),
-//                                          Input::MouseButton::eRight, false);
+    gameplay::Rectangle viewport = getViewport();
+    Camera *_camera = _scene->getActiveCamera();
+    getRenderPipline()->render(_scene.get(), _camera, &viewport);
 }
 
 void GameView::mousePressEvent(QMouseEvent* evt)
 {
     const bool down = true;
     _mousePosition = QPoint(evt->x(), evt->y());
-//    Input::getInput()->postMousePressEvent((int32_t) evt->x(),
-//                                           (int32_t) evt->y(),
-//                                           translateMouseButton(evt->buttons()),
-//                                           down);
+    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON, evt->x(), evt->y(), 0))
+    {
+        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, evt->x(), evt->y(), 0, true);
     }
+}
 
 void GameView::mouseReleaseEvent(QMouseEvent* evt)
 {
     const bool down = false;
     _mousePosition = QPoint(evt->x(), evt->y());
-//    Input::getInput()->postMousePressEvent((int32_t) evt->x(),
-//                                           (int32_t) evt->y(),
-//                                           translateMouseButton(evt->button()),
-//                                           down);
+    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON, evt->x(), evt->y(), 0))
+    {
+        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, evt->x(), evt->y(), 0, true);
+    }
 }
 
 void GameView::mouseMoveEvent(QMouseEvent* evt)
 {
       _mousePosition = QPoint(evt->x(), evt->y());
-      //Input::getInput()->postMouseMotionEvent((int32_t) evt->x(),
-//                                              (int32_t) evt->y());
+      if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, evt->x(), evt->y(), 0))
+      {
+          if (evt->button() & Qt::LeftButton)
+          {
+              // Mouse move events should be interpreted as touch move only if left mouse is held and the game did not consume the mouse event.
+              gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_MOVE, evt->x(), evt->y(), 0, true);
+          }
+      }
 }
 
 void GameView::mouseWheelEvent(QWheelEvent* evt)
@@ -109,7 +124,7 @@ void GameView::mouseWheelEvent(QWheelEvent* evt)
     const float step = evt->pixelDelta().y() / 240.0;
     _mousePosition = QPoint(evt->position().x(), evt->position().y());
     _mouseScroll += step;
-    //Input::getInput()->postMouseWheelEvent((int32_t)_mouseScroll);
+    gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, evt->position().x(), evt->position().y(), evt->pixelDelta().y() / 120);
 }
 
 void GameView::keyPressEvent(QKeyEvent* evt)
@@ -122,44 +137,18 @@ void GameView::keyPressEvent(QKeyEvent* evt)
         }
     }
 
-    // TODO: Handler here...
+    //gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, getKey(wParam, shiftDown ^ capsOn));
 }
 
 void GameView::keyReleaseEvent(QKeyEvent* evt)
 {
     // TODO: Handler here...
+    //gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, getKey(wParam, shiftDown ^ capsOn));
 }
 
 void GameView::closeEvent(QCloseEvent* evt)
 {
+    this->exit();
 }
-
-//Input::MouseButton GameView::translateMouseButton(Qt::MouseButtons buttons)
-//{
-//    if (buttons & Qt::LeftButton)
-//    {
-//         return Input::MouseButton::eLeft;
-//    }
-//    else if (buttons & Qt::RightButton)
-//    {
-//        return Input::MouseButton::eRight;
-//    }
-//    return Input::MouseButton::eMiddle;
-//}
-
-//Input::MouseButton GameView::translateMouseButton(Qt::MouseButton button)
-//{
-//    if (button == Qt::LeftButton)
-//    {
-//        return Input::MouseButton::eLeft;
-//    }
-//    else if (button == Qt::RightButton)
-//    {
-//        return Input::MouseButton::eRight;
-//    }
-//    return Input::MouseButton::eMiddle;
-//}
-
-
 
 

@@ -1065,7 +1065,11 @@ double Platform::getAbsoluteTime()
 {
     LARGE_INTEGER queryTime;
     QueryPerformanceCounter(&queryTime);
-    GP_ASSERT(__timeTicksPerMillis);
+    if(!__timeTicksPerMillis) {
+        LARGE_INTEGER tps;
+        QueryPerformanceFrequency(&tps);
+        __timeTicksPerMillis = (double)(tps.QuadPart / 1000L);
+    }
     __timeAbsolute = queryTime.QuadPart / __timeTicksPerMillis;
 
     return __timeAbsolute - __timeStart;

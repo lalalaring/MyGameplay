@@ -6,6 +6,8 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QSize>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
 
 #include "gameplay.h"
 
@@ -13,7 +15,7 @@
 /**
  * The main game view to render scenes into viewport(s).
  */
-class GameView : public QWidget, public gameplay::Game
+class GameView : public QOpenGLWidget, public gameplay::Game, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
@@ -38,47 +40,21 @@ public:
     void setEditor(EditorWindow* editor);
 
 public slots:
-
     /**
      * Handler when the scene changes.
      */
     void onSceneChanged();
 
- protected slots:
-
-     void onTimer();
+protected:
+     void initializeGL();
+     void paintGL();
+     void resizeGL(int width, int height);
 
 protected:
+     void update(float elapsedTime);
+     void render(float elapsedTime);
 
-    /**
-     * @see Game::onInitialize
-     */
-    void onInitialize();
-
-    /**
-     * @see Game::onFinalize
-     */
-    void onFinalize();
-
-    /**
-     * @see Game::onUpdate
-     */
-    void onUpdate(float elapsedTime);
-
-    /**
-     * @see Game::onRender
-     */
-    void onRender(float elapsedTime);
-
-    /**
-     * @see QWidget::paintEvent
-     */
-    void paintEvent(QPaintEvent* evt);
-
-    /**
-     * @see QWidget::resizeEvent
-     */
-    void resizeEvent(QResizeEvent* evt);
+protected:
 
     /**
      * @see QWidget::mousePressEvent
@@ -117,14 +93,9 @@ protected:
 
 private:
 
-//    static Input::MouseButton translateMouseButton(Qt::MouseButtons buttons);
-//    static Input::MouseButton translateMouseButton(Qt::MouseButton button);
-
     EditorWindow* _editor;
-//    gameplay::Graphics* _graphics;
     gameplay::Ptr<gameplay::Scene> _scene;
     bool _wireframe;
-    QTimer _timer;
     QSize _size;
     QPoint _mousePosition;
     double _mouseScroll;
