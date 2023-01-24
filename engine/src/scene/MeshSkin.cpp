@@ -1,6 +1,6 @@
 #include "base/Base.h"
 #include "MeshSkin.h"
-#include "Joint.h"
+#include "BoneJoint.h"
 #include "Model.h"
 
 // The number of rows in each palette matrix.
@@ -36,19 +36,19 @@ unsigned int MeshSkin::getJointCount() const
     return (unsigned int)_joints.size();
 }
 
-Joint* MeshSkin::getJoint(unsigned int index) const
+BoneJoint* MeshSkin::getJoint(unsigned int index) const
 {
     GP_ASSERT(index < _joints.size());
     return _joints[index];
 }
 
-Joint* MeshSkin::getJoint(const char* id) const
+BoneJoint* MeshSkin::getJoint(const char* id) const
 {
     GP_ASSERT(id);
 
     for (size_t i = 0, count = _joints.size(); i < count; ++i)
     {
-        Joint* j = _joints[i];
+        BoneJoint* j = _joints[i];
         if (j && j->getName() != NULL && strcmp(j->getName(), id) == 0)
         {
             return j;
@@ -90,17 +90,17 @@ MeshSkin* MeshSkin::clone(NodeCloneContext &context) const
             node = skin->_rootNode->findNode(_rootJoint->getName());
         }
         GP_ASSERT(node);
-        skin->_rootJoint = static_cast<Joint*>(node);
+        skin->_rootJoint = static_cast<BoneJoint*>(node);
         for (unsigned int i = 0; i < jointCount; ++i)
         {
-            Joint* oldJoint = getJoint(i);
+            BoneJoint* oldJoint = getJoint(i);
             GP_ASSERT(oldJoint);
             
-            Joint* newJoint = static_cast<Joint*>(skin->_rootNode->findNode(oldJoint->getName()));
+            BoneJoint* newJoint = static_cast<BoneJoint*>(skin->_rootNode->findNode(oldJoint->getName()));
             if (!newJoint)
             {
                 if (strcmp(skin->_rootJoint->getName(), oldJoint->getName()) == 0)
-                    newJoint = static_cast<Joint*>(skin->_rootJoint);
+                    newJoint = static_cast<BoneJoint*>(skin->_rootJoint);
             }
             GP_ASSERT(newJoint);
             skin->setJoint(newJoint, i);
@@ -136,7 +136,7 @@ void MeshSkin::setJointCount(unsigned int jointCount)
     }
 }
 
-void MeshSkin::setJoint(Joint* joint, unsigned int index)
+void MeshSkin::setJoint(BoneJoint* joint, unsigned int index)
 {
     GP_ASSERT(index < _joints.size());
 
@@ -177,12 +177,12 @@ Model* MeshSkin::getModel() const
     return _model;
 }
 
-Joint* MeshSkin::getRootJoint() const
+BoneJoint* MeshSkin::getRootJoint() const
 {
     return _rootJoint;
 }
 
-void MeshSkin::setRootJoint(Joint* joint)
+void MeshSkin::setRootJoint(BoneJoint* joint)
 {
     if (_rootJoint)
     {
@@ -235,7 +235,7 @@ void MeshSkin::transformChanged(Transform* transform, long cookie)
     }
 }
 
-int MeshSkin::getJointIndex(Joint* joint) const
+int MeshSkin::getJointIndex(BoneJoint* joint) const
 {
     for (size_t i = 0, count = _joints.size(); i < count; ++i)
     {
@@ -276,9 +276,9 @@ void MeshSkin::write(Stream* file) {
     file->write((char*)&_bindShape.m, sizeof(_bindShape.m));
     file->writeUInt16(_joints.size());
 
-    dynamic_cast<Joint*>(_rootJoint)->write(file);
+    dynamic_cast<BoneJoint*>(_rootJoint)->write(file);
 
-    for (Joint* join : _joints) {
+    for (BoneJoint* join : _joints) {
         file->writeStr(join->getName());
     }
 //    for (Joint* join : _joints) {
@@ -291,11 +291,11 @@ MeshSkin* MeshSkin::read(Stream* file) {
     int size = file->readUInt16();
     skin->setJointCount(size);
 
-    skin->_rootJoint = Joint::read(file);
+    skin->_rootJoint = BoneJoint::read(file);
     for (int i = 0; i < size; ++i) {
         std::string id = file->readStr();
         Node *node = skin->_rootJoint->findNode(id.c_str());
-        Joint *joint = dynamic_cast<Joint*>(node);
+        BoneJoint *joint = dynamic_cast<BoneJoint*>(node);
         skin->setJoint(joint, i);
     }
 //    skin->_jointsBindPose = new Matrix[size];

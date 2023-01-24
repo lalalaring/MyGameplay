@@ -2,7 +2,7 @@
 #include "audio/AudioListener.h"
 #include "Scene.h"
 #include "MeshSkin.h"
-#include "Joint.h"
+#include "BoneJoint.h"
 #include "objects/Terrain.h"
 #include "../base/SerializerJson.h"
 

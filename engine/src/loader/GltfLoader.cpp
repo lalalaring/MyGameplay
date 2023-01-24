@@ -5,7 +5,7 @@
 #include "../3rd/cgltf.h"
 
 #include "../scene/MeshPart.h"
-#include "../scene/Joint.h"
+#include "../scene/BoneJoint.h"
 
 using namespace gameplay;
 
@@ -199,10 +199,10 @@ private:
 		return model;
 	}
 
-	Joint* getJoint(cgltf_node* cnode) {
+	BoneJoint* getJoint(cgltf_node* cnode) {
 		auto it = nodeMap.find(cnode);
 		if (it != nodeMap.end()) {
-			return dynamic_cast<Joint*>(it->second);
+			return dynamic_cast<BoneJoint*>(it->second);
 		}
 		
 		return NULL;
@@ -219,14 +219,14 @@ private:
 
 		skin->setJointCount(cskin->joints_count);
 		for (int i = 0; i < cskin->joints_count; ++i) {
-			Joint* joint = getJoint(cskin->joints[i]);
+			BoneJoint* joint = getJoint(cskin->joints[i]);
 			if (!joint) continue;
 			Matrix m(matrix+(i*16));
 			joint->setInverseBindPose(m);
 			skin->setJoint(joint, i);
 		}
 
-		Joint* skeleton = getJoint(cskin->skeleton);
+		BoneJoint* skeleton = getJoint(cskin->skeleton);
 		assert(skeleton);
 		skeleton->remove();
 		skin->setRootJoint(skeleton);
@@ -363,7 +363,7 @@ private:
 			cgltf_skin* skin = data->skins + i;
 			for (int j = 0; j < skin->joints_count; ++j) {
 				cgltf_node* joint = skin->joints[j];
-				Node* node = Joint::create(joint->name);
+				Node* node = BoneJoint::create(joint->name);
 				nodeMap[joint] = node;
 			}
 		}

@@ -1,5 +1,5 @@
 #include "Base.h"
-#include "Activator.h"
+#include "SerializerManager.h"
 #include "platform/Game.h"
 #include "scene/Scene.h"
 #include "scene/Node.h"
@@ -13,26 +13,26 @@
 namespace gameplay
 {
 
-static Activator *g_activator;
+static SerializerManager *g_activator;
 
-Activator::Activator()
+SerializerManager::SerializerManager()
 {
 }
 
-Activator::~Activator()
+SerializerManager::~SerializerManager()
 {
 }
 
-Activator* Activator::getActivator()
+SerializerManager* SerializerManager::getActivator()
 {
     if (!g_activator) {
-        g_activator = new Activator();
+        g_activator = new SerializerManager();
         g_activator->registerSystemTypes();
     }
     return g_activator;
 }
 
-Serializable *Activator::createObject(const std::string& className)
+Serializable *SerializerManager::createObject(const std::string& className)
 {
     Serializable *object = nullptr;
     std::map<std::string, CreateObjectCallback>::const_iterator itr = _classes.find(className);
@@ -49,7 +49,7 @@ Serializable *Activator::createObject(const std::string& className)
     return object;
 }
 
-std::string Activator::enumToString(const std::string& enumName, int value)
+std::string SerializerManager::enumToString(const std::string& enumName, int value)
 {
     std::map<std::string,std::pair<EnumToStringCallback, EnumParseCallback>>::const_iterator itr = _enums.find(enumName);
     if (itr != _enums.end())
@@ -63,7 +63,7 @@ std::string Activator::enumToString(const std::string& enumName, int value)
     return nullptr;
 }
 
-int Activator::enumParse(const std::string& enumName, const std::string& str)
+int SerializerManager::enumParse(const std::string& enumName, const std::string& str)
 {
     std::map<std::string,std::pair<EnumToStringCallback, EnumParseCallback>>::const_iterator itr = _enums.find(enumName);
     if (itr != _enums.end())
@@ -77,7 +77,7 @@ int Activator::enumParse(const std::string& enumName, const std::string& str)
     return 0;
 }
 
-void Activator::registerType(const std::string&  className, CreateObjectCallback createObject)
+void SerializerManager::registerType(const std::string&  className, CreateObjectCallback createObject)
 {
     std::map<std::string,CreateObjectCallback>::const_iterator itr = _classes.find(className);
     if ( itr == _classes.end() )
@@ -90,7 +90,7 @@ void Activator::registerType(const std::string&  className, CreateObjectCallback
     }
 }
     
-void Activator::registerEnum(const std::string& enumName, EnumToStringCallback toString, EnumParseCallback parse)
+void SerializerManager::registerEnum(const std::string& enumName, EnumToStringCallback toString, EnumParseCallback parse)
 {
     std::map<std::string, std::pair<EnumToStringCallback, EnumParseCallback>>::const_iterator itr = _enums.find(enumName);
     if (itr == _enums.end())
@@ -103,7 +103,7 @@ void Activator::registerEnum(const std::string& enumName, EnumToStringCallback t
     }
 }
 
-void Activator::registerSystemTypes()
+void SerializerManager::registerSystemTypes()
 {
     // Register engine types with
     this->registerType("gameplay::Game::Config", Game::Config::createObject);

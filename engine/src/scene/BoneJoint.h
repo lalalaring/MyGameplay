@@ -16,7 +16,7 @@ class MeshSkin;
  * a MeshSkin. This allows the vertices in the mesh to be blended and 
  * animated using the sum of the blend weight that must add up to 1.0.
  */
-class Joint : public Node
+class BoneJoint : public Node
 {
     friend class Node;
     friend class MeshSkin;
@@ -54,12 +54,12 @@ public:
     /**
      * Constructor.
      */
-    Joint(const char* id);
+    BoneJoint(const char* id);
 
     /**
      * Destructor.
      */
-    virtual ~Joint();
+    virtual ~BoneJoint();
 
     /**
      * Creates a new joint with the given id.
@@ -68,7 +68,7 @@ public:
      * 
      * @return Newly created joint.
      */
-    static Joint* create(const char* id);
+    static BoneJoint* create(const char* id);
 
     /**
      * Clones a single node and its data but not its children.
@@ -101,7 +101,7 @@ public:
     void transformChanged();
 
     void write(Stream* file);
-    static Joint* read(Stream* file);
+    static BoneJoint* read(Stream* file);
 
 private:
 
@@ -120,12 +120,12 @@ private:
     /**
      * Constructor.
      */
-    Joint(const Joint& copy);
+    BoneJoint(const BoneJoint& copy);
 
     /**
      * Hidden copy assignment operator.
      */
-    Joint& operator=(const Joint&);
+    BoneJoint& operator=(const BoneJoint&);
 
     void addSkin(MeshSkin* skin);
 

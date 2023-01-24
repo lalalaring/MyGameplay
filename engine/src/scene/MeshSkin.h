@@ -10,7 +10,7 @@ namespace gameplay
 class Bundle;
 class Model;
 class Node;
-class Joint;
+class BoneJoint;
 
 /**
  * Defines the skin for a mesh.
@@ -24,7 +24,7 @@ class MeshSkin : public Transform::Listener, public Ref
 {
     friend class Bundle;
     friend class Model;
-    friend class Joint;
+    friend class BoneJoint;
     friend class Node;
     friend class Scene;
 
@@ -56,7 +56,7 @@ public:
      * 
      * @return The joint.
      */
-    Joint* getJoint(unsigned int index) const;
+    BoneJoint* getJoint(unsigned int index) const;
 
     /**
      * Returns the joint with the given ID.
@@ -65,14 +65,14 @@ public:
      * 
      * @return The joint, or NULL if not found.
      */
-    Joint* getJoint(const char* id) const;
+    BoneJoint* getJoint(const char* id) const;
 
     /**
      * Returns the root most joint for this MeshSkin.
      *
      * @return The root joint.
      */
-    Joint* getRootJoint() const;
+    BoneJoint* getRootJoint() const;
 
     /**
      * Sets the root joint for this MeshSkin.
@@ -81,14 +81,14 @@ public:
      *
      * @param joint The root joint.
      */
-    void setRootJoint(Joint* joint);
+    void setRootJoint(BoneJoint* joint);
 
     /**
      * Returns the index of the specified joint in this MeshSkin.
      *
      * @return The index of the joint in this MeshSkin, or -1 if the joint does not belong to this MeshSkin.
      */
-    int getJointIndex(Joint* joint) const;
+    int getJointIndex(BoneJoint* joint) const;
 
     /**
      * Returns the pointer to the Vector4 array for the purpose of binding to a shader.
@@ -171,7 +171,7 @@ public:
      * @param joint The joint to be set.
      * @param index The index in the joints vector.
      */
-    void setJoint(Joint* joint, unsigned int index);
+    void setJoint(BoneJoint* joint, unsigned int index);
 
     /**
      * Sets the root node of this mesh skin.
@@ -186,10 +186,10 @@ public:
     void clearJoints();
 private:
     Matrix _bindShape;
-    std::vector<Joint*> _joints;
+    std::vector<BoneJoint*> _joints;
 
     //for calculate node boundBox
-    Joint* _rootJoint;
+    BoneJoint* _rootJoint;
 
     //std::vector<std::string> _jointsIdRef;
     //Matrix* _jointsBindPose;

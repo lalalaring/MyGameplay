@@ -1,6 +1,6 @@
 #include "Base.h"
 #include "SerializerBinary.h"
-#include "Activator.h"
+#include "SerializerManager.h"
 #include "Serializer.h"
 #include "Stream.h"
 #include "FileSystem.h"
@@ -585,7 +585,7 @@ Serializable* SerializerBinary::readObject(const char* propertyName)
     std::string className;
     readLengthPrefixedString(className);
 
-    Serializable* value = (Activator::getActivator()->createObject(className));
+    Serializable* value = (SerializerManager::getActivator()->createObject(className));
     if (value == nullptr)
     {
         GP_ERROR("Failed to deserialize binary class: %s for propertyName:%s", className.c_str(), propertyName);

@@ -8,7 +8,7 @@ namespace gameplay
 /**
  * Defines a class for dynamic object activation.
  */
-class Activator
+class SerializerManager
 {
     friend class Game;
 
@@ -17,14 +17,14 @@ public:
     /**
      * Destructor.
      */
-    ~Activator();
+    ~SerializerManager();
     
     /**
      * Gets the activator.
      *
      * @return The activator.
      */
-    static Activator* getActivator();
+    static SerializerManager* getActivator();
 
     /**
      * Callback used to create objects on registered serializable classes.
@@ -102,7 +102,7 @@ public:
     
 private:
     
-    Activator();
+    SerializerManager();
     void registerSystemTypes();
     std::map<std::string, CreateObjectCallback> _classes;
     std::map<std::string, std::pair<EnumToStringCallback, EnumParseCallback>> _enums;

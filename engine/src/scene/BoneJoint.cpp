@@ -1,28 +1,28 @@
 #include "base/Base.h"
-#include "Joint.h"
+#include "BoneJoint.h"
 #include "MeshSkin.h"
 #include "Model.h"
 
 namespace gameplay
 {
 
-Joint::Joint(const char* id)
+BoneJoint::BoneJoint(const char* id)
     : Node(id), _jointMatrixDirty(true)
 {
 }
 
-Joint::~Joint()
+BoneJoint::~BoneJoint()
 {
 }
 
-Joint* Joint::create(const char* id)
+BoneJoint* BoneJoint::create(const char* id)
 {
-    return new Joint(id);
+    return new BoneJoint(id);
 }
 
-Node* Joint::cloneSingleNode(NodeCloneContext &context) const
+Node* BoneJoint::cloneSingleNode(NodeCloneContext &context) const
 {
-    Joint* copy = Joint::create(getName());
+    BoneJoint* copy = BoneJoint::create(getName());
     GP_ASSERT(copy);
     context.registerClonedNode(this, copy);
     copy->_bindPose = _bindPose;
@@ -30,17 +30,17 @@ Node* Joint::cloneSingleNode(NodeCloneContext &context) const
     return copy;
 }
 
-Node::Type Joint::getType() const
+Node::Type BoneJoint::getType() const
 {
     return Node::JOINT;
 }
 
-const char* Joint::getTypeName() const
+const char* BoneJoint::getTypeName() const
 {
     return "Joint";
 }
 
-Scene* Joint::getScene() const
+Scene* BoneJoint::getScene() const
 {
     // Overrides Node::getScene() to search the node our skins.
     for (const SkinReference* itr = &_skin; itr && itr->skin; itr = itr->next)
@@ -61,13 +61,13 @@ Scene* Joint::getScene() const
     return Node::getScene();
 }
 
-void Joint::transformChanged()
+void BoneJoint::transformChanged()
 {
     Node::transformChanged();
     _jointMatrixDirty = true;
 }
 
-void Joint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
+void BoneJoint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
 {
     // Note: If more than one MeshSkin influences this Joint, we need to skip
     // the _jointMatrixDirty optimization since updateJointMatrix() may be
@@ -88,18 +88,18 @@ void Joint::updateJointMatrix(const Matrix& bindShape, Vector4* matrixPalette)
     }
 }
 
-const Matrix& Joint::getInverseBindPose() const
+const Matrix& BoneJoint::getInverseBindPose() const
 {
     return _bindPose;
 }
 
-void Joint::setInverseBindPose(const Matrix& m)
+void BoneJoint::setInverseBindPose(const Matrix& m)
 {
     _bindPose = m;
     _jointMatrixDirty = true;
 }
 
-void Joint::addSkin(MeshSkin* skin)
+void BoneJoint::addSkin(MeshSkin* skin)
 {
     if (!_skin.skin)
     {
@@ -119,7 +119,7 @@ void Joint::addSkin(MeshSkin* skin)
     }
 }
 
-void Joint::removeSkin(MeshSkin* skin)
+void BoneJoint::removeSkin(MeshSkin* skin)
 {
     if (_skin.skin == skin)
     {
@@ -155,7 +155,7 @@ void Joint::removeSkin(MeshSkin* skin)
     }
 }
 
-void Joint::write(Stream* file) {
+void BoneJoint::write(Stream* file) {
     file->writeStr(this->getName());
     file->write((char*)&_matrix.m, sizeof(_bindPose.m));
     file->write((char*)&_bindPose.m, sizeof(_bindPose.m));
@@ -163,33 +163,33 @@ void Joint::write(Stream* file) {
 
     for (size_t i=0; i<this->getChildCount(); ++i) {
         Node *child = this->getChild(i);
-        Joint *join = dynamic_cast<Joint*>(child);
+        BoneJoint *join = dynamic_cast<BoneJoint*>(child);
         if (join) {
             join->write(file);
         }
     }
 }
-Joint* Joint::read(Stream* file) {
+BoneJoint* BoneJoint::read(Stream* file) {
     std::string id = file->readStr();
-    Joint *join = new Joint(id.c_str());
+    BoneJoint *join = new BoneJoint(id.c_str());
     file->read(&join->_matrix, sizeof(Matrix), 1);
     file->read(&join->_bindPose, sizeof(Matrix), 1);
 
     int size = file->readUInt16();
     for (int i=0; i<size; ++i) {
-        Joint *child = Joint::read(file);
+        BoneJoint *child = BoneJoint::read(file);
         join->addChild(child);
     }
 
     return join;
 }
 
-Joint::SkinReference::SkinReference()
+BoneJoint::SkinReference::SkinReference()
     : skin(NULL), next(NULL)
 {
 }
 
-Joint::SkinReference::~SkinReference()
+BoneJoint::SkinReference::~SkinReference()
 {
     SAFE_DELETE(next);
 }

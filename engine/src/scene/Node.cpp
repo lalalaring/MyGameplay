@@ -2,7 +2,7 @@
 #include "scene/Node.h"
 #include "audio/AudioSource.h"
 #include "Scene.h"
-#include "Joint.h"
+#include "BoneJoint.h"
 #include "physics/PhysicsRigidBody.h"
 #include "physics/PhysicsVehicle.h"
 #include "physics/PhysicsVehicleWheel.h"

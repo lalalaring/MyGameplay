@@ -1,6 +1,6 @@
 #include "Base.h"
 #include "SerializerJson.h"
-#include "Activator.h"
+#include "SerializerManager.h"
 #include "Serializer.h"
 #include "FileSystem.h"
 #include "math/Vector2.h"
@@ -114,7 +114,7 @@ void SerializerJson::writeEnum(const char* propertyName, const char* enumName, i
     if (value == defaultValue)
         return;
     
-    std::string str = Activator::getActivator()->enumToString(enumName, value);
+    std::string str = SerializerManager::getActivator()->enumToString(enumName, value);
     writeString(propertyName, str.c_str(), "");
 }
     
@@ -441,7 +441,7 @@ int SerializerJson::readEnum(const char* propertyName, const char* enumName, int
     std::string str;
     readString(propertyName, str, "");
     
-    return Activator::getActivator()->enumParse(enumName, str.c_str());
+    return SerializerManager::getActivator()->enumParse(enumName, str.c_str());
 }
 
 bool SerializerJson::readBool(const char* propertyName, bool defaultValue)
@@ -761,7 +761,7 @@ Serializable* SerializerJson::readObject(const char* propertyName)
         }
     }
     
-    Serializable *value = (Activator::getActivator()->createObject(className));
+    Serializable *value = (SerializerManager::getActivator()->createObject(className));
     if (value == nullptr)
     {
         GP_WARN("Failed to deserialize json object:%s for class:", className);
