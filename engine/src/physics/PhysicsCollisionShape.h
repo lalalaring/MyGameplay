@@ -3,7 +3,7 @@
 
 #include "math/Vector3.h"
 #include "scene/Mesh.h"
-#include "scene/HeightField.h"
+#include "objects/HeightField.h"
 #include "physics.h"
 
 namespace gameplay

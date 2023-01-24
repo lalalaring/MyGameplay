@@ -5,7 +5,7 @@
 #include "material/Image.h"
 #include "scene/MeshPart.h"
 #include "scene/Node.h"
-#include "scene/Terrain.h"
+#include "objects/Terrain.h"
 
 namespace gameplay
 {

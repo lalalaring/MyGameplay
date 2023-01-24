@@ -4,7 +4,7 @@
 #include "Control.h"
 #include "Theme.h"
 #include "material/Image.h"
-#include "scene/SpriteBatch.h"
+#include "objects/SpriteBatch.h"
 #include "math/Rectangle.h"
 
 namespace gameplay

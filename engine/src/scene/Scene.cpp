@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include "MeshSkin.h"
 #include "Joint.h"
-#include "Terrain.h"
+#include "objects/Terrain.h"
 #include "../base/SerializerJson.h"
 
 #define SCENE_NAME ""

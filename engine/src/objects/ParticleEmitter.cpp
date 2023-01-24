@@ -2,7 +2,7 @@
 #include "ParticleEmitter.h"
 #include "platform/Game.h"
 #include "scene/Node.h"
-#include "Scene.h"
+#include "scene/Scene.h"
 #include "math/Quaternion.h"
 #include "base/Properties.h"
 

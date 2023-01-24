@@ -2,7 +2,7 @@
 #define TERRAIN_H_
 
 #include "base/Ref.h"
-#include "Drawable.h"
+#include "scene/Drawable.h"
 #include "scene/Transform.h"
 #include "base/Properties.h"
 #include "HeightField.h"

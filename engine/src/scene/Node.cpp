@@ -8,7 +8,7 @@
 #include "physics/PhysicsVehicleWheel.h"
 #include "physics/PhysicsGhostObject.h"
 #include "physics/PhysicsCharacter.h"
-#include "Terrain.h"
+#include "objects/Terrain.h"
 #include "platform/Game.h"
 #include "Drawable.h"
 #include "ui/Form.h"

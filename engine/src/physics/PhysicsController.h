@@ -4,7 +4,7 @@
 #include "PhysicsConstraint.h"
 #include "PhysicsCollisionObject.h"
 #include "scene/MeshBatch.h"
-#include "scene/HeightField.h"
+#include "objects/HeightField.h"
 #include "script/ScriptTarget.h"
 #include "../math/Quaternion.h"
 

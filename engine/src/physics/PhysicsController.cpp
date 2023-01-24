@@ -4,7 +4,7 @@
 #include "PhysicsCharacter.h"
 #include "platform/Game.h"
 #include "scene/MeshPart.h"
-#include "scene/Terrain.h"
+#include "objects/Terrain.h"
 
 #ifdef GP_USE_MEM_LEAK_DETECTION
 #undef new

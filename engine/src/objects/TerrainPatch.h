@@ -1,8 +1,8 @@
 #ifndef TERRAINPATCH_H_
 #define TERRAINPATCH_H_
 
-#include "Model.h"
-#include "Camera.h"
+#include "scene/Model.h"
+#include "scene/Camera.h"
 #include "../material/Texture.h"
 
 namespace gameplay

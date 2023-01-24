@@ -3,11 +3,11 @@
 
 #include "material/Texture.h"
 #include "material/ShaderProgram.h"
-#include "Mesh.h"
+#include "scene/Mesh.h"
 #include "math/Rectangle.h"
 #include "math/Matrix.h"
 #include "material/Material.h"
-#include "MeshBatch.h"
+#include "scene/MeshBatch.h"
 
 namespace gameplay
 {

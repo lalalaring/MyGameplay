@@ -2,14 +2,14 @@
 #define PARTICLEEMITTER_H_
 
 #include "scene/Transform.h"
-#include "Mesh.h"
+#include "scene/Mesh.h"
 #include "math/Vector2.h"
 #include "math/Vector4.h"
 #include "material/Texture.h"
 #include "math/Rectangle.h"
 #include "SpriteBatch.h"
 #include "base/Properties.h"
-#include "Drawable.h"
+#include "scene/Drawable.h"
 
 namespace gameplay
 {

@@ -4,8 +4,8 @@
 #include "material/Image.h"
 #include "base/Properties.h"
 #include "base/FileSystem.h"
-#include "scene/HeightField.h"
-#include "scene/Terrain.h"
+#include "objects/HeightField.h"
+#include "objects/Terrain.h"
 
 namespace gameplay
 {

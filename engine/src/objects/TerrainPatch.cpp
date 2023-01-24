@@ -1,8 +1,8 @@
 #include "base/Base.h"
 #include "TerrainPatch.h"
 #include "Terrain.h"
-#include "MeshPart.h"
-#include "Scene.h"
+#include "scene/MeshPart.h"
+#include "scene/Scene.h"
 #include "platform/Game.h"
 
 #include <iostream>

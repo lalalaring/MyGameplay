@@ -2,7 +2,7 @@
 #define TILESET_H__
 
 #include "base/Ref.h"
-#include "Drawable.h"
+#include "scene/Drawable.h"
 #include "base/Properties.h"
 #include "math/Vector2.h"
 #include "math/Vector4.h"
