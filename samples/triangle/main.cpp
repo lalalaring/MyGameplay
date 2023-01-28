@@ -73,7 +73,8 @@ class App : public Game {
         // Create a material from the built-in "colored-unlit" vertex and fragment shaders.
         // This sample doesn't use lighting so the unlit shader is used.
         // This sample uses vertex color so VERTEX_COLOR is defined. Look at the shader source files to see the supported defines.
-        _model->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+        Material *material = _model->setMaterial("res/shaders/colored.vert", "res/shaders/colored.frag", "VERTEX_COLOR");
+        //material->getParameter("u_diffuseColor")->setVector4(Vector4(50,0,0,1));
 
         Node* modelNode = _scene->addNode("model");
         modelNode->setDrawable(_model);

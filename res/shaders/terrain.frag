@@ -6,50 +6,11 @@ precision mediump float;
 #endif
 #endif
 
-#ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
-#endif
-#ifndef SPOT_LIGHT_COUNT
-#define SPOT_LIGHT_COUNT 0
-#endif
-#ifndef POINT_LIGHT_COUNT
-#define POINT_LIGHT_COUNT 0
-#endif
-#if (DIRECTIONAL_LIGHT_COUNT > 0) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-#define LIGHTING
-#endif
+#include "_lighting_def.glsl"
 
 ///////////////////////////////////////////////////////////
 // Uniforms
 uniform vec3 u_ambientColor; 
-
-#if defined(LIGHTING)
-
-#if (DIRECTIONAL_LIGHT_COUNT > 0)
-uniform vec3 u_directionalLightColor[DIRECTIONAL_LIGHT_COUNT];
-uniform vec3 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-uniform vec3 u_pointLightColor[POINT_LIGHT_COUNT];
-uniform vec3 u_pointLightPosition[POINT_LIGHT_COUNT];
-uniform float u_pointLightRangeInverse[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-uniform vec3 u_spotLightColor[SPOT_LIGHT_COUNT];
-uniform vec3 u_spotLightDirection[SPOT_LIGHT_COUNT];
-uniform float u_spotLightRangeInverse[SPOT_LIGHT_COUNT];
-uniform float u_spotLightInnerAngleCos[SPOT_LIGHT_COUNT];
-uniform float u_spotLightOuterAngleCos[SPOT_LIGHT_COUNT];
-#endif
-
-#if defined (NORMAL_MAP)
-uniform sampler2D u_normalMap;
-uniform mat4 u_normalMatrix;
-#endif
-
-#endif
 
 #if defined(DEBUG_PATCHES)
 uniform float u_row;
@@ -67,36 +28,19 @@ vec4 _baseColor;
 ///////////////////////////////////////////////////////////
 // Varyings
 #if defined(LIGHTING)
-#if !defined(NORMAL_MAP)
-varying vec3 v_normalVector;
-#else
-vec3 v_normalVector;
-
-#if (DIRECTIONAL_LIGHT_COUNT > 0)
-varying vec3 v_lightDirection[DIRECTIONAL_LIGHT_COUNT];
+#include "_lighting.frag"
 #endif
 
-#if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-
-#endif
-#endif
-
-varying vec2 v_texCoord0;
+in vec2 v_texCoord0;
 
 #if (LAYER_COUNT > 0)
-varying vec2 v_texCoordLayer0;
+in vec2 v_texCoordLayer0;
 #endif
 #if (LAYER_COUNT > 1)
-varying vec2 v_texCoordLayer1;
+in vec2 v_texCoordLayer1;
 #endif
 #if (LAYER_COUNT > 2)
-varying vec2 v_texCoordLayer2;
+in vec2 v_texCoordLayer2;
 #endif
 #if (LAYER_COUNT > 1)
 void blendLayer(sampler2D textureMap, vec2 texCoord, float alphaBlend)
@@ -105,11 +49,7 @@ void blendLayer(sampler2D textureMap, vec2 texCoord, float alphaBlend)
     _baseColor.rgb = _baseColor.rgb * (1.0 - alphaBlend) + diffuse * alphaBlend;
 }
 #endif
-
-#if defined(LIGHTING)
-#include "lighting.frag"
-#endif
-
+out vec4 FragColor;
 
 void main()
 {
@@ -141,12 +81,12 @@ void main()
     v_normalVector = (u_normalMatrix * vec4(v_normalVector.x, v_normalVector.y, v_normalVector.z, 0)).xyz;
     #endif
 
-    gl_FragColor.a = _baseColor.a;
-    gl_FragColor.rgb = getLitPixel();
+    FragColor.a = _baseColor.a;
+    FragColor.rgb = getLitPixel();
 
     #else
 
-    gl_FragColor.rgb = _baseColor.rgb;
+    FragColor.rgb = _baseColor.rgb;
 
     #endif
 }

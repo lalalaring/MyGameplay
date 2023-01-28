@@ -1,4 +1,29 @@
 
+
+#if !defined(BUMPED)
+out vec3 v_normalVector;
+#endif
+
+#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
+out vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#endif
+
+#if (POINT_LIGHT_COUNT > 0)
+out vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+#endif
+
+#if (SPOT_LIGHT_COUNT > 0)
+out vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+#if defined(BUMPED)
+out vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+#endif
+#endif
+
+#if defined(SPECULAR)
+out vec3 v_cameraDirection;
+#endif
+
+
 #if defined(BUMPED)
 void applyLight(vec4 position, mat3 tangentSpaceTransformMatrix)
 {

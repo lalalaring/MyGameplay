@@ -1,4 +1,30 @@
 
+#if !defined(BUMPED)
+in vec3 v_normalVector;
+#endif
+
+
+#if (DIRECTIONAL_LIGHT_COUNT > 0)
+in vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
+#endif
+
+#if (POINT_LIGHT_COUNT > 0)
+in vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
+#endif
+
+#if (SPOT_LIGHT_COUNT > 0)
+in vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
+#if defined(BUMPED)
+in vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
+#endif
+#endif
+
+#if defined(SPECULAR)
+in vec3 v_cameraDirection; 
+#endif
+
+
+
 vec3 computeLighting(vec3 normalVector, vec3 lightDirection, vec3 lightColor, float attenuation)
 {
     float diffuse = max(dot(normalVector, lightDirection), 0.0);

@@ -1,23 +1,18 @@
-#ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
-#endif
-#ifndef SPOT_LIGHT_COUNT
-#define SPOT_LIGHT_COUNT 0
-#endif
-#ifndef POINT_LIGHT_COUNT
-#define POINT_LIGHT_COUNT 0
-#endif
-#if (DIRECTIONAL_LIGHT_COUNT > 0) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-#define LIGHTING
-#endif
+
+#include "_lighting_def.glsl"
 
 ///////////////////////////////////////////////////////////
 // Attributes
-attribute vec4 a_position;
+in vec4 a_position;
 #if !defined(NORMAL_MAP) && defined(LIGHTING)
-attribute vec3 a_normal;
+in vec3 a_normal;
 #endif
-attribute vec2 a_texCoord0;
+in vec2 a_texCoord0;
+
+#if defined(BUMPED)
+in vec3 a_tangent;
+in vec3 a_binormal;
+#endif
 
 ///////////////////////////////////////////////////////////
 // Uniforms
@@ -26,60 +21,22 @@ uniform mat4 u_worldViewProjectionMatrix;
 uniform mat4 u_normalMatrix;
 #endif
 
-#if defined(LIGHTING)
-
-uniform mat4 u_inverseTransposeWorldViewMatrix;
-
-#if (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-uniform mat4 u_worldViewMatrix;
-#endif
-
-#if (DIRECTIONAL_LIGHT_COUNT > 0)
-uniform vec3 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0) 
-uniform vec3 u_pointLightPosition[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-uniform vec3 u_spotLightPosition[SPOT_LIGHT_COUNT];
-uniform vec3 u_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-
-#endif
 
 ///////////////////////////////////////////////////////////
 // Varyings
-
 #if defined(LIGHTING)
-varying vec3 v_normalVector;
-
-#if (DIRECTIONAL_LIGHT_COUNT > 0) 
-varying vec3 v_lightDirection[DIRECTIONAL_LIGHT_COUNT];
+#include "_lighting.vert"
 #endif
 
-#if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-
-#include "lighting.vert"
-
-#endif
-
-varying vec2 v_texCoord0;
+out vec2 v_texCoord0;
 #if LAYER_COUNT > 0
-varying vec2 v_texCoordLayer0;
+out vec2 v_texCoordLayer0;
 #endif
 #if LAYER_COUNT > 1
-varying vec2 v_texCoordLayer1;
+out vec2 v_texCoordLayer1;
 #endif
 #if LAYER_COUNT > 2
-varying vec2 v_texCoordLayer2;
+out vec2 v_texCoordLayer2;
 #endif
 
 

@@ -1,75 +1,39 @@
-#ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
-#endif
-#ifndef SPOT_LIGHT_COUNT
-#define SPOT_LIGHT_COUNT 0
-#endif
-#ifndef POINT_LIGHT_COUNT
-#define POINT_LIGHT_COUNT 0
-#endif
-#if (DIRECTIONAL_LIGHT_COUNT > 0) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-#define LIGHTING
-#endif
 
+#include "_lighting_def.glsl"
 ///////////////////////////////////////////////////////////
 // Atributes
-attribute vec4 a_position;
+in vec4 a_position;
+
+#if !defined(NORMAL_MAP) && defined(LIGHTING)
+in vec3 a_normal;
+#endif
 
 #if defined(SKINNING)
-attribute vec4 a_blendWeights;
-attribute vec4 a_blendIndices;
+in vec4 a_blendWeights;
+in vec4 a_blendIndices;
 #endif
 
-attribute vec2 a_texCoord;
+in vec2 a_texCoord;
 
 #if defined(LIGHTMAP)
-attribute vec2 a_texCoord1; 
+in vec2 a_texCoord1; 
 #endif
-
-#if defined(LIGHTING)
-attribute vec3 a_normal;
 
 #if defined(BUMPED)
-attribute vec3 a_tangent;
-attribute vec3 a_binormal;
-#endif
-
+in vec3 a_tangent;
+in vec3 a_binormal;
 #endif
 
 ///////////////////////////////////////////////////////////
 // Uniforms
 uniform mat4 u_worldViewProjectionMatrix;
+#if !defined(NORMAL_MAP) && defined(LIGHTING)
+uniform mat4 u_normalMatrix;
+#endif
 #if defined(SKINNING)
 uniform vec4 u_matrixPalette[SKINNING_JOINT_COUNT * 3];
 #endif
 
-#if defined(LIGHTING)
-uniform mat4 u_inverseTransposeWorldViewMatrix;
-
-#if defined(SPECULAR) || (POINT_LIGHT_COUNT > 0) || (SPOT_LIGHT_COUNT > 0)
-uniform mat4 u_worldViewMatrix;
-#endif
-
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-uniform vec3 u_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-uniform vec3 u_pointLightPosition[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0) 
-uniform vec3 u_spotLightPosition[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-uniform vec3 u_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
-
-#if defined(SPECULAR)
-uniform vec3 u_cameraPosition;
-#endif
-
-#endif
 
 #if defined(TEXTURE_REPEAT)
 uniform vec2 u_textureRepeat;
@@ -86,49 +50,24 @@ uniform vec4 u_clipPlane;
 
 ///////////////////////////////////////////////////////////
 // Varyings
-varying vec2 v_texCoord;
+out vec2 v_texCoord;
 
 #if defined(LIGHTMAP)
-varying vec2 v_texCoord1;
+out vec2 v_texCoord1;
 #endif
 
 #if defined(LIGHTING)
-
-#if !defined(BUMPED)
-varying vec3 v_normalVector;
-#endif
-
-#if defined(BUMPED) && (DIRECTIONAL_LIGHT_COUNT > 0)
-varying vec3 v_directionalLightDirection[DIRECTIONAL_LIGHT_COUNT];
-#endif
-
-#if (POINT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToPointLightDirection[POINT_LIGHT_COUNT];
-#endif
-
-#if (SPOT_LIGHT_COUNT > 0)
-varying vec3 v_vertexToSpotLightDirection[SPOT_LIGHT_COUNT];
-#if defined(BUMPED)
-varying vec3 v_spotLightDirection[SPOT_LIGHT_COUNT];
-#endif
-#endif
-
-#if defined(SPECULAR)
-varying vec3 v_cameraDirection;
-#endif
-
-#include "lighting.vert"
-
+#include "_lighting.vert"
 #endif
 
 #if defined(SKINNING)
-#include "skinning.vert"
+#include "_skinning.vert"
 #else
-#include "skinning-none.vert" 
+#include "_skinning-none.vert" 
 #endif
 
 #if defined(CLIP_PLANE)
-varying float v_clipDistance;
+out float v_clipDistance;
 #endif
 
 void main()

@@ -8,7 +8,9 @@ precision mediump float;
 
 uniform vec4 u_diffuseColor;
 
+out vec4 FragColor;
+
 void main()
 {
-    gl_FragColor = u_diffuseColor;
+    FragColor = u_diffuseColor;
 }
