@@ -65,6 +65,8 @@ public:
      */
     static Mesh* createMesh(const VertexFormat& vertexFormat, unsigned int vertexCount, bool dynamic = false);
 
+    static Mesh* createPlane();
+
     /**
      * Creates a new textured 3D quad.
      *

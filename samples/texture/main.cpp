@@ -93,7 +93,7 @@ class MainApp : public Game {
         // This sample doesn't use lighting so the unlit shader is used.
         // This sample uses vertex color so VERTEX_COLOR is defined. Look at the shader source files to see the supported defines.
         Material* material = _model->setMaterial("res/shaders/textured.vert", "res/shaders/textured.frag");
-        Texture* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/crate.png", true);
+        Texture* sampler = material->getParameter("u_diffuseTexture")->setValue("res/image/crate.png", true);
         sampler->setFilterMode(Texture::LINEAR_MIPMAP_LINEAR, Texture::LINEAR);
         material->getStateBlock()->setCullFace(true);
         material->getStateBlock()->setDepthTest(true);

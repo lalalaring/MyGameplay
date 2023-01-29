@@ -5,6 +5,7 @@
 #include "base/Properties.h"
 #include "scene/Node.h"
 #include "MaterialParameter.h"
+#include "platform/Game.h"
 
 namespace gameplay
 {
@@ -203,6 +204,14 @@ void Material::bindCamera(RenderView* view, Node *node) {
     if (uniform) {
         MaterialParameter* param = getParameter("u_viewPort");
         param->setVector4(&view->viewport.x);
+        param->_temporary = true;
+    }
+
+
+    uniform = _shaderProgram->getUniform("u_time");
+    if (uniform) {
+        MaterialParameter* param = getParameter("u_time");
+        param->setFloat(Game::getGameTime() / (double)1000);
         param->_temporary = true;
     }
 }

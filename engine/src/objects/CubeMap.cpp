@@ -38,7 +38,7 @@ bool gameplay::CubeMap::load(std::vector<std::string>& faces, bool isSkyBox)
 
 
     //Material* material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag");
-    //Texture* sampler = material->getParameter("u_diffuseTexture")->setValue("res/png/crate.png", true);
+    //Texture* sampler = material->getParameter("u_diffuseTexture")->setValue("res/image/crate.png", true);
 
     this->texture = sampler;
     this->_material = material;

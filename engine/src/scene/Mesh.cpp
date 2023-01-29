@@ -105,6 +105,33 @@ Mesh* Mesh::createQuadFullscreen()
     return mesh;
 }
 
+Mesh* Mesh::createPlane() {
+    float vertices[] = {
+        -1, 0, -1, 0, 1, 0,
+        -1, 0, 1, 0, 1, 0,
+        1, 0, -1, 0, 1, 0,
+        1, 0, 1, 0, 1, 0,
+    };
+
+    VertexFormat::Element elements[] =
+    {
+        VertexFormat::Element(VertexFormat::POSITION, 3),
+        VertexFormat::Element(VertexFormat::NORMAL, 3),
+    };
+
+    Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 2), 4, false);
+    if (mesh == NULL)
+    {
+        GP_ERROR("Failed to create mesh.");
+        return NULL;
+    }
+
+    mesh->_primitiveType = TRIANGLE_STRIP;
+    mesh->setVertexData(vertices, 0, 4);
+
+    return mesh;
+}
+
 Mesh* Mesh::createQuad3D(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4)
 {
     // Calculate the normal vector of the plane.
