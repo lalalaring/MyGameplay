@@ -159,9 +159,20 @@ void Material::bindCamera(RenderView* view, Node *node) {
         param->_temporary = true;
     }
 
-    uniform = _shaderProgram->getUniform("u_cameraWorldPosition");
+    uniform = _shaderProgram->getUniform("u_normalMatrix");
     if (uniform) {
-        MaterialParameter* param = getParameter("u_cameraWorldPosition");
+        Matrix invTransWorld;
+        Matrix::multiply(view->camera->getViewMatrix(), node->getWorldMatrix(), &invTransWorld);
+        invTransWorld.invert();
+        invTransWorld.transpose();
+        MaterialParameter* param = getParameter("u_normalMatrix");
+        param->setMatrix(invTransWorld);
+        param->_temporary = true;
+    }
+
+    uniform = _shaderProgram->getUniform("u_cameraPosition");
+    if (uniform) {
+        MaterialParameter* param = getParameter("u_cameraPosition");
         param->setVector3(view->camera->getNode()->getTranslationWorld());
         param->_temporary = true;
     }
@@ -185,6 +196,13 @@ void Material::bindCamera(RenderView* view, Node *node) {
         Scene* scene = node->getScene();
         MaterialParameter* param = getParameter("u_ambientColor");
         param->setVector3(view->camera->getNode()->getTranslationWorld());
+        param->_temporary = true;
+    }
+
+    uniform = _shaderProgram->getUniform("u_viewPort");
+    if (uniform) {
+        MaterialParameter* param = getParameter("u_viewPort");
+        param->setVector4(&view->viewport.x);
         param->_temporary = true;
     }
 }

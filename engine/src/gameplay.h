@@ -63,6 +63,8 @@
 #include "scene/AssetManager.h"
 #include "render/RenderPipline.h"
 #include "loader/GLtfLoader.h"
+#include "objects/CubeMap.h"
+#include "objects/Line.h"
 
 // Audio
 #include "audio/AudioController.h"

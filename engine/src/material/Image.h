@@ -31,7 +31,7 @@ public:
      * @return The newly created image.
      * @script{create}
      */
-    static Image* create(const char* path);
+    static Image* create(const char* path, bool flipY = true);
 
     /**
      * Creates an image from the data provided

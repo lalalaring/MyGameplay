@@ -1,5 +1,5 @@
 name = mygameplay
-summary = MyGameplay engine
+summary = MGP engine
 outType = lib
 version = 1.0
 depends = glew 1.0, openal 1.22.2, bullet 3.24, freetype 2.4.12, libjson 7.6.1, ljs 1.0

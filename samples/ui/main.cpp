@@ -4,7 +4,7 @@
 
 using namespace gameplay;
 
-class App : public Game, Control::Listener {
+class MainApp : public Game, Control::Listener {
     Form* form;
     Label* label;
     Button* button;
@@ -61,7 +61,7 @@ class App : public Game, Control::Listener {
 
 };
 
-App instance;
+MainApp instance;
 
 //int main()
 //{

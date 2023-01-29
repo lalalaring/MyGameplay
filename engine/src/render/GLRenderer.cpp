@@ -599,6 +599,11 @@ void GLRenderer::updateTexture(Texture* texture) {
             const unsigned char* texturePtr = (texture->_data == NULL) ? NULL : &texture->_data[i * textureSize];
             GL_ASSERT(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, internalFormat, texelType, texturePtr));
         }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
     // Set initial minification filter based on whether or not mipmaping was enabled.
@@ -641,7 +646,6 @@ void GLRenderer::bindTextureSampler(Texture* sampler) {
 
     GLuint textureId = _texture->_handle;
     GL_ASSERT(glBindTexture(target, textureId));
-
 
     GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, (GLenum)sampler->_minFilter));
     GL_ASSERT(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, (GLenum)sampler->_magFilter));

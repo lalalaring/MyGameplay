@@ -69,7 +69,7 @@ protected:
      * @param context The clone context.
      * @return The newly created drawable.
      */
-    virtual Drawable* clone(NodeCloneContext& context) = 0;
+    virtual Drawable* clone(NodeCloneContext& context) { return NULL; }
 
     /**
      * Sets the node this drawable is attached to.

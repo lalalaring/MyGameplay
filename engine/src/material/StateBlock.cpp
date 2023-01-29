@@ -380,7 +380,7 @@ void StateBlock::setStencilOperation(StencilOperation sfail, StencilOperation dp
 }
 
 StateBlock::StateBlock()
-    : _cullFaceEnabled(false), _depthTestEnabled(false), _depthWriteEnabled(true), _depthFunction(StateBlock::DEPTH_LESS),
+    : _cullFaceEnabled(true), _depthTestEnabled(true), _depthWriteEnabled(true), _depthFunction(StateBlock::DEPTH_LESS),
     _blendEnabled(false), _blendSrc(StateBlock::BLEND_ONE), _blendDst(StateBlock::BLEND_ZERO),
     _cullFaceSide(CULL_FACE_SIDE_BACK), _frontFace(FRONT_FACE_CCW), _stencilTestEnabled(false), _stencilWrite(RS_ALL_ONES),
     _stencilFunction(StateBlock::STENCIL_ALWAYS), _stencilFunctionRef(0), _stencilFunctionMask(RS_ALL_ONES),

@@ -105,7 +105,7 @@ Mesh* Mesh::createQuadFullscreen()
     return mesh;
 }
 
-Mesh* Mesh::createQuad(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4)
+Mesh* Mesh::createQuad3D(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4)
 {
     // Calculate the normal vector of the plane.
     Vector3 v1, v2, n;
@@ -166,6 +166,193 @@ Mesh* Mesh::createLines(Vector3* points, unsigned int pointCount)
     mesh->setVertexData(vertices, 0, pointCount);
 
     SAFE_DELETE_ARRAY(vertices);
+    return mesh;
+}
+
+Mesh* Mesh::createCube(float size)
+{
+    float a = size * 0.5f;
+    float vertices[] =
+    {
+        -a, -a,  a,    0.0,  0.0,  1.0,   0.0, 0.0,
+         a, -a,  a,    0.0,  0.0,  1.0,   1.0, 0.0,
+        -a,  a,  a,    0.0,  0.0,  1.0,   0.0, 1.0,
+         a,  a,  a,    0.0,  0.0,  1.0,   1.0, 1.0,
+        -a,  a,  a,    0.0,  1.0,  0.0,   0.0, 0.0,
+         a,  a,  a,    0.0,  1.0,  0.0,   1.0, 0.0,
+        -a,  a, -a,    0.0,  1.0,  0.0,   0.0, 1.0,
+         a,  a, -a,    0.0,  1.0,  0.0,   1.0, 1.0,
+        -a,  a, -a,    0.0,  0.0, -1.0,   0.0, 0.0,
+         a,  a, -a,    0.0,  0.0, -1.0,   1.0, 0.0,
+        -a, -a, -a,    0.0,  0.0, -1.0,   0.0, 1.0,
+         a, -a, -a,    0.0,  0.0, -1.0,   1.0, 1.0,
+        -a, -a, -a,    0.0, -1.0,  0.0,   0.0, 0.0,
+         a, -a, -a,    0.0, -1.0,  0.0,   1.0, 0.0,
+        -a, -a,  a,    0.0, -1.0,  0.0,   0.0, 1.0,
+         a, -a,  a,    0.0, -1.0,  0.0,   1.0, 1.0,
+         a, -a,  a,    1.0,  0.0,  0.0,   0.0, 0.0,
+         a, -a, -a,    1.0,  0.0,  0.0,   1.0, 0.0,
+         a,  a,  a,    1.0,  0.0,  0.0,   0.0, 1.0,
+         a,  a, -a,    1.0,  0.0,  0.0,   1.0, 1.0,
+        -a, -a, -a,   -1.0,  0.0,  0.0,   0.0, 0.0,
+        -a, -a,  a,   -1.0,  0.0,  0.0,   1.0, 0.0,
+        -a,  a, -a,   -1.0,  0.0,  0.0,   0.0, 1.0,
+        -a,  a,  a,   -1.0,  0.0,  0.0,   1.0, 1.0
+    };
+    short indices[] =
+    {
+        0, 1, 2, 2, 1, 3, 4, 5, 6, 6, 5, 7, 8, 9, 10, 10, 9, 11, 12, 13, 14, 14, 13, 15, 16, 17, 18, 18, 17, 19, 20, 21, 22, 22, 21, 23
+    };
+    unsigned int vertexCount = 24;
+    unsigned int indexCount = 36;
+    VertexFormat::Element elements[] =
+    {
+        VertexFormat::Element(VertexFormat::POSITION, 3),
+        VertexFormat::Element(VertexFormat::NORMAL, 3),
+        VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+    };
+    Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), vertexCount, false);
+    if (mesh == NULL)
+    {
+        GP_ERROR("Failed to create mesh.");
+        return NULL;
+    }
+    mesh->setVertexData(vertices, 0, vertexCount);
+    MeshPart* meshPart = mesh->addPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+    meshPart->setIndexData(indices, 0, indexCount);
+    return mesh;
+}
+
+Mesh* Mesh::createSimpleCube()
+{
+    float vertices[] =
+    {
+        -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
+      1.0, -1.0, -1.0, 1.0, -1.0,
+
+      -1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0,
+      1.0, 1.0, -1.0, -1.0, 1.0,
+
+      1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      -1.0, 1.0, -1.0, -1.0,
+
+      -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
+      1.0, -1.0, -1.0, 1.0,
+
+      -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+      1.0, -1.0, 1.0, -1.0,
+
+      -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, -1.0,
+      -1.0, 1.0, 1.0, -1.0, 1.0,
+    };
+
+    unsigned int vertexCount = 36;
+    VertexFormat::Element elements[] =
+    {
+        VertexFormat::Element(VertexFormat::POSITION, 3),
+    };
+    Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 1), vertexCount, false);
+    if (mesh == NULL)
+    {
+        GP_ERROR("Failed to create mesh.");
+        return NULL;
+    }
+    mesh->setVertexData(vertices, 0, vertexCount);
+    mesh->_primitiveType = TRIANGLES;
+    return mesh;
+}
+
+Mesh* Mesh::createSpherical(int subdivision) {
+    int width_segments = subdivision;
+    int height_segments = subdivision;
+
+    float phi_start = 0, phi_length = MATH_PI * 2, theta_start = 0, theta_length = MATH_PI;
+    float theta_end = min(theta_start + theta_length, MATH_PI);
+    float radius = 1.0;
+
+    float *_vertices = new float[((width_segments + 1) * (height_segments + 1) * 6)];
+    int i = 0;
+    std::vector<uint16_t> indices;
+
+    int index = 0;
+    std::vector<std::vector<int>> grid;
+
+    // generate vertices, normals and uvs
+    for (int iy = 0; iy <= height_segments; iy++) {
+        std::vector<int> vertices_row;
+        float v = iy / (double)height_segments;
+        // special case for the poles
+        int uOffset = 0;
+        if (iy == 0 && theta_start == 0) {
+            uOffset = 0.5 / width_segments;
+        }
+        else if (iy == height_segments && theta_end == MATH_PI) {
+            uOffset = -0.5 / width_segments;
+        }
+
+        for (int ix = 0; ix <= width_segments; ix++) {
+            float u = ix / (double)width_segments;
+            // vertex
+            float x = -radius * cos(phi_start + u * phi_length) * sin(theta_start + v * theta_length);
+            float y = radius * cos(theta_start + v * theta_length);
+            float z = radius * sin(phi_start + u * phi_length) * sin(theta_start + v * theta_length);
+
+            _vertices[i++] = x;
+            _vertices[i++] = y;
+            _vertices[i++] = z;
+
+            // normal
+            _vertices[i++] = x;
+            _vertices[i++] = y;
+            _vertices[i++] = z;
+
+            // uv
+            //uvs.push( u + uOffset, 1 - v );
+            vertices_row.push_back(index++);
+        }
+
+        grid.push_back(vertices_row);
+    }
+
+    // indices
+    for (int iy = 0; iy < height_segments; iy++) {
+        for (int ix = 0; ix < width_segments; ix++) {
+            int a = grid[iy][ix + 1];
+            int b = grid[iy][ix];
+            int c = grid[iy + 1][ix];
+            int d = grid[iy + 1][ix + 1];
+            if (iy != 0 || theta_start > 0) {
+                indices.push_back(a);
+                indices.push_back(b);
+                indices.push_back(d);
+            }
+            if (iy != height_segments - 1 || theta_end < MATH_PI) {
+                indices.push_back(b);
+                indices.push_back(c);
+                indices.push_back(d);
+            }
+        }
+    }
+
+    unsigned int vertexCount = (width_segments + 1) * (height_segments + 1);
+    unsigned int indexCount = indices.size();
+    VertexFormat::Element elements[] =
+    {
+        VertexFormat::Element(VertexFormat::POSITION, 3),
+        VertexFormat::Element(VertexFormat::NORMAL, 3),
+        //VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
+    };
+    Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 2), vertexCount, false);
+    if (mesh == NULL)
+    {
+        GP_ERROR("Failed to create mesh.");
+        return NULL;
+    }
+    mesh->setVertexData(_vertices, 0, vertexCount);
+    MeshPart* meshPart = mesh->addPart(Mesh::TRIANGLES, Mesh::INDEX16, indexCount, false);
+    meshPart->setIndexData(indices.data(), 0, indexCount);
+
+    SAFE_DELETE_ARRAY(_vertices);
     return mesh;
 }
 

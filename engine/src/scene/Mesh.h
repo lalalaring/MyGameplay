@@ -80,7 +80,7 @@ public:
      * @return The created mesh.
      * @script{create}
      */
-    static Mesh* createQuad(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4);
+    static Mesh* createQuad3D(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector3& p4);
 
     /**
      * Constructs a new textured 2D quad.
@@ -126,6 +126,10 @@ public:
      * @script{create}
      */
     static Mesh* createLines(Vector3* points, unsigned int pointCount);
+
+    static Mesh* createCube(float size = 1.0f);
+    static Mesh* createSimpleCube();
+    static Mesh* createSpherical(int subdivision = 64);
 
     /**
      * Creates a bounding box mesh when passed a BoundingBox.

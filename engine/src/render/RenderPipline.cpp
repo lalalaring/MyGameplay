@@ -12,12 +12,18 @@ enum RenderQueue
 };
 
 RenderPipline::RenderPipline(Renderer* renderer) : renderer(renderer), _scene(NULL) ,__viewFrustumCulling(true){
-
 }
 
 void RenderPipline::render(Scene* scene, Camera* camera, Rectangle* viewport) {
     _scene = scene;
     _camera = camera;
+
+    for (unsigned int i = 0; i < QUEUE_COUNT; ++i)
+    {
+        std::vector<Node*>& queue = _renderQueues[i];
+        queue.clear();
+    }
+
     // Clear the color and depth buffers
     renderer->clear(Renderer::CLEAR_COLOR_DEPTH, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0);
 
@@ -29,13 +35,14 @@ void RenderPipline::render(Scene* scene, Camera* camera, Rectangle* viewport) {
 }
 
 bool RenderPipline::buildRenderQueues(Node *node) {
-    Model* model = dynamic_cast<Model*>(node->getDrawable());
-    if (model)
+    Drawable* drawable = node->getDrawable();
+    if (drawable)
     {
         // Perform view-frustum culling for this node
-        if (__viewFrustumCulling && !node->getBoundingSphere().intersects(_camera->getFrustum()))
-            return true;
-
+        if (dynamic_cast<Model*>(drawable)) {
+            if (__viewFrustumCulling && !node->getBoundingSphere().intersects(_camera->getFrustum()))
+                return true;
+        }
         // Determine which render queue to insert the node into
         std::vector<Node*>* queue;
         if (node->hasTag("transparent"))

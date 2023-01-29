@@ -130,6 +130,9 @@ public:
      */
     static Texture* create(Format format, unsigned int width, unsigned int height, const unsigned char* data, bool generateMipmaps = false, Type type = TEXTURE_2D);
 
+    static Texture* loadCubeMap(const char* faces[]);
+
+    static size_t getFormatBPP(Texture::Format format);
     /**
      * Creates a texture object to wrap the specified pre-created native texture handle.
      *

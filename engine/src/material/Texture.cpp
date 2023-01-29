@@ -11,7 +11,7 @@ namespace gameplay
 static std::vector<Texture*> __textureCache;
 
 Texture::Texture() : _handle(0), _format(UNKNOWN), _type((Texture::Type)0), _width(0), _height(0), _mipmapped(false), _cached(false), _compressed(false),
-    _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT), _minFilter(Texture::NEAREST_MIPMAP_LINEAR), _magFilter(Texture::LINEAR), _data(NULL), _generateMipmaps(false)
+    _wrapS(Texture::REPEAT), _wrapT(Texture::REPEAT), _wrapR(Texture::REPEAT), _minFilter(Texture::NEAREST), _magFilter(Texture::LINEAR), _data(NULL), _generateMipmaps(false)
 {
 }
 
@@ -39,8 +39,10 @@ bool Texture::load(const char* path) {
     {
     case Image::RGB:
         _format = Texture::RGB;
+        break;
     case Image::RGBA:
         _format = Texture::RGBA;
+        break;
     default:
         GP_ERROR("Unsupported image format (%d).", image->getFormat());
         return false;
@@ -172,6 +174,79 @@ Texture* Texture::create(Format format, unsigned int width, unsigned int height,
     texture->_data = data;
     Renderer::cur()->updateTexture(texture);
     texture->_data = NULL;
+    return texture;
+}
+
+size_t Texture::getFormatBPP(Texture::Format format)
+{
+    switch (format)
+    {
+    case Texture::RGB565:
+    case Texture::RGBA4444:
+    case Texture::RGBA5551:
+        return 2;
+    case Texture::RGB888:
+        return 3;
+    case Texture::RGBA8888:
+        return 4;
+    case Texture::ALPHA:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+Texture* Texture::loadCubeMap(const char* faces[]) {
+    unsigned char* data = NULL;
+    int width;
+    int height;
+    Format format;
+    for (int i=0; i<6; ++i) {
+        const char *url = faces[i];
+        Image* image = Image::create(url, false);
+        if (!image) return nullptr;
+
+        int bpp = 4;
+        switch (image->getFormat())
+        {
+        case Image::RGB:
+            format = Texture::RGB;
+            bpp = 3;
+            break;
+        case Image::RGBA:
+            format = Texture::RGBA;
+            bpp = 4;
+            break;
+        default:
+            GP_ERROR("Unsupported image format (%d).", image->getFormat());
+            return NULL;
+        }
+
+        width = image->getWidth();
+        height = image->getHeight();
+        int imageDataSize = image->getWidth() * image->getHeight() * bpp;
+        if (!data) {
+            data = (unsigned char*)malloc(imageDataSize * 6);
+        }
+
+        memcpy(data+(imageDataSize*i), image->getData(), imageDataSize);
+
+        SAFE_RELEASE(image);
+    }
+
+    Texture *texture = new Texture();
+    texture->_type = TEXTURE_CUBE;
+    texture->_format = format;
+    texture->_width = width;
+    texture->_height = height;
+    texture->_data = data;
+    texture->_minFilter = NEAREST;
+    texture->_wrapR = CLAMP;
+    texture->_wrapS = CLAMP;
+    texture->_wrapT = CLAMP;
+    Renderer::cur()->updateTexture(texture);
+    texture->_data = NULL;
+    free(data);
     return texture;
 }
 
@@ -428,6 +503,11 @@ void Texture::setFilterMode(Filter minificationFilter, Filter magnificationFilte
 
 void Texture::bind()
 {
+    if (!this->isMipmapped()) {
+        if (_minFilter >= NEAREST_MIPMAP_NEAREST && _minFilter <= LINEAR_MIPMAP_LINEAR) {
+            GP_ERROR("Unsupported minFilter (%d).", _minFilter);
+        }
+    }
     Renderer::cur()->bindTextureSampler(this);
 }
 

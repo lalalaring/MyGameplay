@@ -118,14 +118,14 @@ Image* Image::create(const char* path)
 namespace gameplay {
     void getFullPath(const char* path, std::string& fullPath);
 }
-Image* Image::create(const char* path)
+Image* Image::create(const char* path, bool flipY)
 {
     GP_ASSERT(path);
 
     std::string fullPath;
     gameplay::getFullPath(path, fullPath);
 
-    stbi_set_flip_vertically_on_load(true);
+    if (flipY) stbi_set_flip_vertically_on_load(true);
 
     int iw, ih, n;
     unsigned char* data = stbi_load(fullPath.c_str(), &iw, &ih, &n, 0);

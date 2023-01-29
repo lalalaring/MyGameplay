@@ -35,7 +35,8 @@ public:
         TEXCOORD4 = 12,
         TEXCOORD5 = 13,
         TEXCOORD6 = 14,
-        TEXCOORD7 = 15
+        TEXCOORD7 = 15,
+        CUSTEM = 16,
     };
 
     /**
@@ -73,6 +74,8 @@ public:
          * @param size The number of float values in the vertex element.
          */
         Element(Usage usage, unsigned int size);
+
+        Element(const std::string &name, unsigned int size);
 
         /**
          * Compares two vertex elements for equality.

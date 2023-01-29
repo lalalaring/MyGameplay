@@ -71,6 +71,9 @@ VertexFormat::Element::Element(Usage usage, unsigned int size) :
 {
 }
 
+VertexFormat::Element::Element(const std::string &name, unsigned int size) : usage(CUSTEM), name(name), size(size) {
+}
+
 bool VertexFormat::Element::operator == (const VertexFormat::Element& e) const
 {
     return (size == e.size && usage == e.usage);
