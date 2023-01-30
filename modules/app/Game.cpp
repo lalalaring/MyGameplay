@@ -174,8 +174,8 @@ int Game::run()
 
     loadConfig();
 
-    _width = Platform::getDisplayWidth();
-    _height = Platform::getDisplayHeight();
+    _width = 1024;// Platform::getDisplayWidth();
+    _height = 768;// Platform::getDisplayHeight();
 
     // Start up game systems.
     if (!startup())
@@ -274,7 +274,7 @@ void Game::shutdown()
         GP_ASSERT(_physicsController);
         GP_ASSERT(_aiController);
 
-        Platform::signalShutdown();
+        //Platform::signalShutdown();
 
 		// Call user finalize
         finalize();

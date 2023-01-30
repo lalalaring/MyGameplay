@@ -85,7 +85,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     gameplay::Platform::resizeEventInternal(width, height);
 }
 
-void Platform::init()
+void Platform::init(const char* title)
 {
     //FileSystem::setResourcePath("./");
 
@@ -99,7 +99,7 @@ void Platform::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1024, 768, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, title, NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -338,40 +338,16 @@ bool Platform::isGestureRegistered(Gesture::GestureEvent evt)
     return false;
 }
 
-}
-
-
-#ifndef _WINDOWS_
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#endif
-
-using namespace gameplay;
-
-#if NO_MAIN
-/**
- * Main entry point.
- */
-extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
-{
+int Platform::run() {
     Game* game = Game::getInstance();
     GP_ASSERT(game);
-    Platform::init();
+    Platform::init("MGP Engine");
     int result = Platform::enterMessagePump();
     Platform::signalShutdown();
     return result;
 }
-#else 
-int main() {
-    Game* game = Game::getInstance();
-    GP_ASSERT(game);
-    Platform::init();
-    int result = Platform::enterMessagePump();
-    Platform::signalShutdown();
-    return result;
-}
-#endif //NO_MAIN
 
+}
 
 #endif //GP_GLFW
 #endif //GP_NO_PLATFORM

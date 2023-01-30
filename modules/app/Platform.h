@@ -26,7 +26,7 @@ public:
      *
      * @script{ignore}
      */
-    static void init();
+    static void init(const char* title);
 
     /**
      * Begins processing the platform messages.
@@ -393,6 +393,8 @@ public:
      */
     //static void shutdownInternal();
 
+    static int run();
+
 private:
 
     //Game* _game;                // The game this platform is interfacing with.
@@ -401,5 +403,6 @@ private:
 }
 
 #include "app/Game.h"
+
 
 #endif

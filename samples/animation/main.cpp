@@ -70,7 +70,6 @@ class MainApp : public Game {
 
 MainApp instance;
 
-//int main()
-//{
-//    std::cout << "Hello World!\n";
-//}
+int main() {
+    return Platform::run();
+}

@@ -41,7 +41,7 @@ Ptr<Project> Project::create(const QString& path, const QString& name, QObject* 
     // Create a project file
     if (!_serializerActivated)
     {
-        gameplay::Activator::getActivator()->registerType("gameplay::Project", &Project::createObject);
+        gameplay::SerializerManager::getActivator()->registerType("gameplay::Project", &Project::createObject);
         _serializerActivated = true;
     }
     QString projectFilePath(path + QString("/") + QString(QLatin1String(PROJECT_FILE)));
@@ -97,7 +97,7 @@ Ptr<Project> Project::open(const QString& path, QObject* parent)
 {
     if (!_serializerActivated)
     {
-        gameplay::Activator::getActivator()->registerType("gameplay::Project", &Project::createObject);
+        gameplay::SerializerManager::getActivator()->registerType("gameplay::Project", &Project::createObject);
         _serializerActivated = true;
     }
 

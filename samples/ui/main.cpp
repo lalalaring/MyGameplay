@@ -63,7 +63,6 @@ class MainApp : public Game, Control::Listener {
 
 MainApp instance;
 
-//int main()
-//{
-//    std::cout << "Hello World!\n";
-//}
+int main() {
+    return Platform::run();
+}

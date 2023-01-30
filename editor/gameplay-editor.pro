@@ -56,7 +56,6 @@ FORMS += \
 
 RESOURCES += gameplay-editor.qrc
 
-
 INCLUDEPATH += src \
   $$(FMAKE_REPO)/lib/cpp/glew-1.0-release/include \
   $$(FMAKE_REPO)/lib/cpp/openal-1.22.2-release/include \
@@ -64,7 +63,14 @@ INCLUDEPATH += src \
   $$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-release/include \
   $$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-release/include \
   $$(FMAKE_REPO)/lib/cpp/ljs-1.0-release/include \
-  $$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-release/include \
+
+CONFIG(release, debug|release): INCLUDEPATH += \
+  $$(FMAKE_REPO)/lib/cpp/mgpEngine-1.0-release/include \
+  $$(FMAKE_REPO)/lib/cpp/mgpModules-1.0-release/include \
+
+CONFIG(debug, debug|release): INCLUDEPATH += \
+  $$(FMAKE_REPO)/lib/cpp/mgpEngine-1.0-debug/include \
+  $$(FMAKE_REPO)/lib/cpp/mgpModules-1.0-debug/include \
 
 CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glew-1.0-release/lib
 CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/openal-1.22.2-release/lib
@@ -72,7 +78,9 @@ CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/bullet-3.24-rel
 CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-release/lib
 CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-release/lib
 CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/ljs-1.0-release/lib
-CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mgpEngine-1.0-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mgpModules-1.0-release/lib
+CONFIG(release, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glfw-1.0-release/lib
 
 CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glew-1.0-debug/lib
 CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/openal-1.22.2-debug/lib
@@ -80,10 +88,14 @@ CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/bullet-3.24-debug
 CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/freetype-2.4.12-debug/lib
 CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/libjson-7.6.1-debug/lib
 CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/ljs-1.0-debug/lib
-CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mygameplay-1.0-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mgpEngine-1.0-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/mgpModules-1.0-debug/lib
+CONFIG(debug, debug|release): LIBS += -L$$(FMAKE_REPO)/lib/cpp/glfw-1.0-debug/lib
 
-LIBS += -lmygameplay
+LIBS += -lmgpEngine
+LIBS += -lmgpModules
 LIBS += -lglew
+LIBS += -lglfw
 LIBS += -lopenal
 LIBS += -lbullet
 LIBS += -lfreetype

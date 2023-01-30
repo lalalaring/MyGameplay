@@ -18,7 +18,7 @@ GameView::GameView(QWidget* parent) : QOpenGLWidget(parent),
 
 GameView::~GameView()
 {
-    gameplay::Game::getInstance()->exit();
+    Game::exit();
 }
 
 void GameView::setEditor(EditorWindow* editor)
@@ -52,7 +52,7 @@ void GameView::initializeGL() {
 
     this->run();
 
-    gameplay::Platform::resizeEventInternal(this->size().width(), this->size().height());
+    Game::resizeEventInternal(this->size().width(), this->size().height());
 
     GltfLoader loader;
     _scene = loader.load("res/gltf/Triangle.gltf");
@@ -67,12 +67,12 @@ void GameView::initializeGL() {
     }
 }
 void GameView::paintGL() {
-    this->frame();
+    Game::frame();
     //context()->swapBuffers(context()->surface());
     QWidget::update();
 }
 void GameView::resizeGL(int width, int height) {
-    gameplay::Platform::resizeEventInternal(width, height);
+    Game::resizeEventInternal(width, height);
 }
 void GameView::update(float elapsedTime)
 {
@@ -90,9 +90,9 @@ void GameView::mousePressEvent(QMouseEvent* evt)
 {
     const bool down = true;
     _mousePosition = QPoint(evt->x(), evt->y());
-    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON, evt->x(), evt->y(), 0))
+    if (!Game::mouseEventInternal(gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON, evt->x(), evt->y(), 0))
     {
-        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, evt->x(), evt->y(), 0, true);
+        Game::touchEventInternal(gameplay::Touch::TOUCH_PRESS, evt->x(), evt->y(), 0);
     }
 }
 
@@ -100,21 +100,21 @@ void GameView::mouseReleaseEvent(QMouseEvent* evt)
 {
     const bool down = false;
     _mousePosition = QPoint(evt->x(), evt->y());
-    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON, evt->x(), evt->y(), 0))
+    if (!Game::mouseEventInternal(gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON, evt->x(), evt->y(), 0))
     {
-        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, evt->x(), evt->y(), 0, true);
+        Game::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, evt->x(), evt->y(), 0);
     }
 }
 
 void GameView::mouseMoveEvent(QMouseEvent* evt)
 {
       _mousePosition = QPoint(evt->x(), evt->y());
-      if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, evt->x(), evt->y(), 0))
+      if (!Game::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, evt->x(), evt->y(), 0))
       {
           if (evt->button() & Qt::LeftButton)
           {
               // Mouse move events should be interpreted as touch move only if left mouse is held and the game did not consume the mouse event.
-              gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_MOVE, evt->x(), evt->y(), 0, true);
+              Game::touchEventInternal(gameplay::Touch::TOUCH_MOVE, evt->x(), evt->y(), 0);
           }
       }
 }
@@ -124,7 +124,7 @@ void GameView::mouseWheelEvent(QWheelEvent* evt)
     const float step = evt->pixelDelta().y() / 240.0;
     _mousePosition = QPoint(evt->position().x(), evt->position().y());
     _mouseScroll += step;
-    gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, evt->position().x(), evt->position().y(), evt->pixelDelta().y() / 120);
+    Game::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, evt->position().x(), evt->position().y(), evt->pixelDelta().y() / 120);
 }
 
 void GameView::keyPressEvent(QKeyEvent* evt)
@@ -137,18 +137,18 @@ void GameView::keyPressEvent(QKeyEvent* evt)
         }
     }
 
-    //gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_PRESS, getKey(wParam, shiftDown ^ capsOn));
+    //Game::keyEventInternal(gameplay::Keyboard::KEY_PRESS, getKey(wParam, shiftDown ^ capsOn));
 }
 
 void GameView::keyReleaseEvent(QKeyEvent* evt)
 {
     // TODO: Handler here...
-    //gameplay::Platform::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, getKey(wParam, shiftDown ^ capsOn));
+    //Game::keyEventInternal(gameplay::Keyboard::KEY_RELEASE, getKey(wParam, shiftDown ^ capsOn));
 }
 
 void GameView::closeEvent(QCloseEvent* evt)
 {
-    this->exit();
+    Game::exit();
 }
 
 
