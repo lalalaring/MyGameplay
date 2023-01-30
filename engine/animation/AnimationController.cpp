@@ -7,13 +7,21 @@
 namespace gameplay
 {
 
+static AnimationController* g_cur;
+
 AnimationController::AnimationController()
     : _state(STOPPED)
 {
+    g_cur = this;
 }
 
 AnimationController::~AnimationController()
 {
+    g_cur = NULL;
+}
+
+AnimationController *AnimationController::cur() {
+    return g_cur;
 }
 
 void AnimationController::stopAllAnimations() 

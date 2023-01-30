@@ -56,7 +56,7 @@
 #include "render/GLFrameBuffer.h"
 #include "render/RenderTarget.h"
 #include "render/DepthStencilTarget.h"
-#include "platform/ScreenDisplayer.h"
+//#include "platform/ScreenDisplayer.h"
 #include "objects/HeightField.h"
 #include "objects/Terrain.h"
 #include "objects/TerrainPatch.h"

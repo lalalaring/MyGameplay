@@ -6,7 +6,6 @@
 #include "platform/Mouse.h"
 #include "platform/Touch.h"
 #include "platform/Gesture.h"
-#include "Gamepad.h"
 #include "base/FileSystem.h"
 
 namespace gameplay
@@ -22,26 +21,12 @@ class Game;
 class Platform
 {
 public:
-
-    friend class Game;
-    friend class Gamepad;
-    friend class ScreenDisplayer;
-    friend class FileSystem;
-
-    /**
-     * Destructor.
-     */
-    ~Platform();
-
     /**
      * Creates a platform for the specified game which it will interact with.
      *
-     * @param game The game to create a platform for.
-     *
-     * @return The created platform interface.
      * @script{ignore}
      */
-    static Platform* create(Game* game);
+    static void init();
 
     /**
      * Begins processing the platform messages.
@@ -54,14 +39,14 @@ public:
      *
      * @return The platform message pump return code.
      */
-    int enterMessagePump();
+    static int enterMessagePump();
 
     /**
      * Swaps the frame buffer on the device.
      */
     static void swapBuffers();
 
-private:
+public:
 
     /**
      * This method informs the platform that the game is shutting down
@@ -93,20 +78,6 @@ private:
     static unsigned int getDisplayHeight();
 
     /**
-     * Gets the absolute platform time starting from when the message pump was started.
-     *
-     * @return The absolute platform time. (in milliseconds)
-     */
-    static double getAbsoluteTime();
-
-    /**
-     * Sets the absolute platform time since the start of the message pump.
-     *
-     * @param time The time to set (in milliseconds).
-     */
-    static void setAbsoluteTime(double time);
-
-    /**
      * Gets whether vertical sync is enabled for the game display.
      *
      * @return true if vsync is enabled; false if not.
@@ -119,13 +90,6 @@ private:
      * @param enable true if vsync is enabled; false if not.
      */
     static void setVsync(bool enable);
-
-    /**
-     * Sleeps synchronously for the given amount of time (in milliseconds).
-     *
-     * @param ms How long to sleep (in milliseconds).
-     */
-    static void sleep(long ms);
 
     /**
      * Set if multi-sampling is enabled on the platform.
@@ -283,17 +247,7 @@ private:
      */
     static bool launchURL(const char* url);
 
-    /**
-     * Constructor.
-     */
-    Platform(Game* game);
-
-    /**
-     * Constructor.
-     */
-    Platform(const Platform& copy);
-
-public:
+//private:
 
     /**
      * Internal method used only from static code in various platform implementation.
@@ -365,58 +319,58 @@ public:
      */
     static void resizeEventInternal(unsigned int width, unsigned int height);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadEventConnectedInternal(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadEventConnectedInternal(GamepadHandle handle, unsigned int buttonCount, unsigned int joystickCount, unsigned int triggerCount, const char* name);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadEventDisconnectedInternal(GamepadHandle handle);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadEventDisconnectedInternal(GamepadHandle handle);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping mapping);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadButtonPressedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping mapping);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping button);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadButtonReleasedEventInternal(GamepadHandle handle, Gamepad::ButtonMapping button);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadTriggerChangedEventInternal(GamepadHandle handle, unsigned int index, float value);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadTriggerChangedEventInternal(GamepadHandle handle, unsigned int index, float value);
 
-    /**
-     * Internal method used only from static code in various platform implementation.
-     *
-     * @script{ignore}
-     */
-    static void gamepadJoystickChangedEventInternal(GamepadHandle handle, unsigned int index, float x, float y);
+    // /**
+    //  * Internal method used only from static code in various platform implementation.
+    //  *
+    //  * @script{ignore}
+    //  */
+    // static void gamepadJoystickChangedEventInternal(GamepadHandle handle, unsigned int index, float x, float y);
 
-    /**
-     * Internal method used to poll the platform for the updated Gamepad
-     * states such as buttons, joytick and trigger values.
-     *
-     * Some platforms require to poll the gamepad system to get deltas. 
-     *
-     * @param gamepad The gamepad to be returned with the latest polled values populated.
-     * @script{ignore}
-     */
-    static void pollGamepadState(Gamepad* gamepad);
+    // /**
+    //  * Internal method used to poll the platform for the updated Gamepad
+    //  * states such as buttons, joytick and trigger values.
+    //  *
+    //  * Some platforms require to poll the gamepad system to get deltas. 
+    //  *
+    //  * @param gamepad The gamepad to be returned with the latest polled values populated.
+    //  * @script{ignore}
+    //  */
+    // static void pollGamepadState(Gamepad* gamepad);
 
     /**
      * Displays an open or save dialog using the native platform dialog system.
@@ -437,11 +391,11 @@ public:
      *
      * @script{ignore}
      */
-    static void shutdownInternal();
+    //static void shutdownInternal();
 
 private:
 
-    Game* _game;                // The game this platform is interfacing with.
+    //Game* _game;                // The game this platform is interfacing with.
 };
 
 }

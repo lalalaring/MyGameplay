@@ -8,6 +8,8 @@
 #include "ui/Form.h"
 #include "render/RenderPipline.h"
 #include "script/ScriptController.h"
+#include "base/SerializerManager.h"
+#include "render/GLRenderer.h"
 
 #define SPLASH_DURATION     2.0f
 
@@ -24,12 +26,41 @@
 /** @script{ignore} */
 ALenum __al_error_code = AL_NO_ERROR;
 
+extern gameplay::Renderer* g_rendererInstance;
+
 namespace gameplay
 {
 
 static Game* __gameInstance = NULL;
 double Game::_pausedTimeLast = 0.0;
 double Game::_pausedTimeTotal = 0.0;
+
+
+void regiseterSerializer() {
+    SerializerManager *mgr = SerializerManager::getActivator();
+    mgr->registerType("gameplay::Game::Config", Game::Config::createObject);
+    mgr->registerType("gameplay::Scene", Scene::createObject);
+    mgr->registerType("gameplay::Node", Node::createObject);
+    mgr->registerType("gameplay::Camera", Camera::createObject);
+    mgr->registerType("gameplay::Light", Light::createObject);
+    mgr->registerType("gameplay::Model", Model::createObject);
+    mgr->registerType("gameplay::Material", Material::createObject);
+    mgr->registerType("gameplay::Texture", Texture::createObject);
+    mgr->registerType("gameplay::MaterialParameter", MaterialParameter::createObject);
+
+    // Register engine enums
+    mgr->registerEnum("gameplay::Camera::Mode", Camera::enumToString, Camera::enumParse);
+    mgr->registerEnum("gameplay::Light::Type", Light::enumToString, Light::enumParse);
+    mgr->registerEnum("gameplay::Light::Mode", Light::enumToString, Light::enumParse);
+    mgr->registerEnum("gameplay::Light::Shadows", Light::enumToString, Light::enumParse);
+
+    mgr->registerEnum("gameplay::Texture::Format", Texture::enumToString, Texture::enumParse);
+    mgr->registerEnum("gameplay::Texture::Type", Texture::enumToString, Texture::enumParse);
+    mgr->registerEnum("gameplay::Texture::Wrap", Texture::enumToString, Texture::enumParse);
+    mgr->registerEnum("gameplay::Texture::Filter", Texture::enumToString, Texture::enumParse);
+
+    mgr->registerEnum("gameplay::MaterialParameter::Type", MaterialParameter::enumToString, MaterialParameter::enumParse);
+}
 
 /**
 * @script{ignore}
@@ -75,12 +106,18 @@ Game::Game()
       _clearDepth(1.0f), _clearStencil(0), _properties(NULL),
       _animationController(NULL), _audioController(NULL),
       _physicsController(NULL), _aiController(NULL), _audioListener(NULL),
-      _timeEvents(NULL), _scriptController(NULL), _scriptTarget(NULL), _renderPipline(NULL)
+      _timeEvents(NULL), _scriptController(NULL), _scriptTarget(NULL), _renderPipline(NULL),
+      _inputListener(NULL)
 {
     GP_ASSERT(__gameInstance == NULL);
 
     __gameInstance = this;
     _timeEvents = new std::priority_queue<TimeEvent, std::vector<TimeEvent>, std::less<TimeEvent> >();
+
+    Toolkit::g_instance = this;
+
+    regiseterSerializer();
+    setInputListener(this);
 }
 
 Game::~Game()
@@ -125,24 +162,9 @@ void Game::render(float elapsedTime)
     // stub
 }
 
-double Game::getAbsoluteTime()
-{
-    return Platform::getAbsoluteTime();
-}
-
 double Game::getGameTime()
 {
-    return Platform::getAbsoluteTime() - _pausedTimeTotal;
-}
-
-void Game::setVsync(bool enable)
-{
-    Platform::setVsync(enable);
-}
-
-bool Game::isVsync()
-{
-    return Platform::isVsync();
+    return System::currentTimeMillis() - _pausedTimeTotal;
 }
 
 int Game::run()
@@ -170,6 +192,7 @@ bool Game::startup()
     if (_state != UNINITIALIZED)
         return false;
 
+    g_rendererInstance = new GLRenderer();
     _renderPipline = new RenderPipline(Renderer::cur());
 
     setViewport(Rectangle(0.0f, 0.0f, (float)_width, (float)_height));
@@ -191,8 +214,10 @@ bool Game::startup()
     _scriptController = new ScriptController();
     _scriptController->initialize();
 
+    _audioListener = new AudioListener();
+
     // Load any gamepads, ui or physical.
-    loadGamepads();
+    //loadGamepads();
 
     // Set script handler
     if (_properties)
@@ -264,12 +289,12 @@ void Game::shutdown()
 		// Shutdown scripting system first so that any objects allocated in script are released before our subsystems are released
 		_scriptController->finalize();
 
-        unsigned int gamepadCount = Gamepad::getGamepadCount();
+        /*unsigned int gamepadCount = Gamepad::getGamepadCount();
         for (unsigned int i = 0; i < gamepadCount; i++)
         {
             Gamepad* gamepad = Gamepad::getGamepad(i, false);
             SAFE_DELETE(gamepad);
-        }
+        }*/
 
         _renderPipline->finalize();
         SAFE_DELETE(_renderPipline);
@@ -312,7 +337,7 @@ void Game::pause()
         GP_ASSERT(_physicsController);
         GP_ASSERT(_aiController);
         _state = PAUSED;
-        _pausedTimeLast = Platform::getAbsoluteTime();
+        _pausedTimeLast = System::currentTimeMillis();
         _animationController->pause();
         _audioController->pause();
         _physicsController->pause();
@@ -335,7 +360,7 @@ void Game::resume()
             GP_ASSERT(_physicsController);
             GP_ASSERT(_aiController);
             _state = RUNNING;
-            _pausedTimeTotal += Platform::getAbsoluteTime() - _pausedTimeLast;
+            _pausedTimeTotal += System::currentTimeMillis() - _pausedTimeLast;
             _animationController->resume();
             _audioController->resume();
             _physicsController->resume();
@@ -380,7 +405,7 @@ void Game::frame()
         _initialized = true;
 
         // Fire first game resize event
-        Platform::resizeEventInternal(_width, _height);
+        resizeEventInternal(_width, _height);
     }
 
 	static double lastFrameTime = Game::getGameTime();
@@ -410,7 +435,7 @@ void Game::frame()
         _aiController->update(elapsedTime);
 
         // Update gamepads.
-        Gamepad::updateInternal(elapsedTime);
+        //Gamepad::updateInternal(elapsedTime);
 
         // Application Update.
         update(elapsedTime);
@@ -444,7 +469,7 @@ void Game::frame()
 	else if (_state == Game::PAUSED)
     {
         // Update gamepads.
-        Gamepad::updateInternal(0);
+        //Gamepad::updateInternal(0);
 
         // Application Update.
         update(0);
@@ -465,36 +490,6 @@ void Game::frame()
     }
 }
 
-void Game::renderOnce(const char* function)
-{
-#ifdef GP_SCRIPT
-    _scriptController->executeFunction<void>(function, NULL);
-#endif // GP_SCRIPT
-    Platform::swapBuffers();
-}
-
-void Game::updateOnce()
-{
-    GP_ASSERT(_animationController);
-    GP_ASSERT(_audioController);
-    GP_ASSERT(_physicsController);
-    GP_ASSERT(_aiController);
-
-    // Update Time.
-    static double lastFrameTime = getGameTime();
-    double frameTime = getGameTime();
-    float elapsedTime = (frameTime - lastFrameTime);
-    lastFrameTime = frameTime;
-
-    // Update the internal controllers.
-    _animationController->update(elapsedTime);
-    _physicsController->update(elapsedTime);
-    _aiController->update(elapsedTime);
-    _audioController->update(elapsedTime);
-    if (_scriptTarget)
-        _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, update), elapsedTime);
-}
-
 RenderPipline* Game::getRenderPipline() {
     return _renderPipline;
 }
@@ -505,118 +500,41 @@ void Game::setViewport(const Rectangle& viewport)
     _renderPipline->getRenderer()->setViewport((int)viewport.x, (int)viewport.y, (int)viewport.width, (int)viewport.height);
 }
 
-void Game::clear(Renderer::ClearFlags flags, const Vector4& clearColor, float clearDepth, int clearStencil)
-{
-    clear(flags, clearColor.x, clearColor.y, clearColor.z, clearColor.w, clearDepth, clearStencil);
-}
-
-void Game::clear(Renderer::ClearFlags flags, float red, float green, float blue, float alpha, float clearDepth, int clearStencil)
-{
-    _renderPipline->getRenderer()->clear(flags, red, green, blue, alpha, clearDepth, clearStencil);
-}
-
-AudioListener* Game::getAudioListener()
-{
-    if (_audioListener == NULL)
-    {
-        _audioListener = new AudioListener();
-    }
-    return _audioListener;
-}
-
-void Game::keyEvent(Keyboard::KeyEvent evt, int key)
-{
-    // stub
-}
-
-void Game::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
-{
-    // stub
-}
-
-bool Game::mouseEvent(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
-{
-    // stub
-    return false;
-}
-
-void Game::resizeEvent(unsigned int width, unsigned int height)
-{
-    // stub
-}
-
-bool Game::isGestureSupported(Gesture::GestureEvent evt)
-{
-    return Platform::isGestureSupported(evt);
-}
-
-void Game::registerGesture(Gesture::GestureEvent evt)
-{
-    Platform::registerGesture(evt);
-}
-
-void Game::unregisterGesture(Gesture::GestureEvent evt)
-{
-    Platform::unregisterGesture(evt);
-}
-
-bool Game::isGestureRegistered(Gesture::GestureEvent evt)
-{
-    return Platform::isGestureRegistered(evt);
-}
-
-void Game::gestureSwipeEvent(int x, int y, int direction)
-{
-    // stub
-}
-
-void Game::gesturePinchEvent(int x, int y, float scale)
-{
-    // stub
-}
-
-void Game::gestureTapEvent(int x, int y)
-{
-    // stub
-}
-
-void Game::gestureLongTapEvent(int x, int y, float duration)
-{
-    // stub
-}
-
-void Game::gestureDragEvent(int x, int y)
-{
-    // stub
-}
-
-void Game::gestureDropEvent(int x, int y)
-{
-    // stub
-}
-
-void Game::gamepadEvent(Gamepad::GamepadEvent evt, Gamepad* gamepad)
-{
-    // stub
-}
+//AudioListener* Game::getAudioListener()
+//{
+//    if (_audioListener == NULL)
+//    {
+//        _audioListener = new AudioListener();
+//    }
+//    return _audioListener;
+//}
 
 void Game::keyEventInternal(Keyboard::KeyEvent evt, int key)
 {
-    keyEvent(evt, key);
+    if (Form::keyEventInternal(evt, key)) {
+        return;
+    }
+    if (_inputListener) _inputListener->keyEvent(evt, key);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, keyEvent), evt, key);
 }
 
 void Game::touchEventInternal(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
 {
-    touchEvent(evt, x, y, contactIndex);
+    if (Form::touchEventInternal(evt, x, y, contactIndex)) {
+        return;
+    }
+    if (_inputListener) _inputListener->touchEvent(evt, x, y, contactIndex);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, touchEvent), evt, x, y, contactIndex);
 }
 
 bool Game::mouseEventInternal(Mouse::MouseEvent evt, int x, int y, int wheelDelta)
 {
-    if (mouseEvent(evt, x, y, wheelDelta))
+    if (Form::mouseEventInternal(evt, x, y, wheelDelta))
+        return true;
+
+    if (_inputListener && _inputListener->mouseEvent(evt, x, y, wheelDelta))
         return true;
 
     if (_scriptTarget)
@@ -632,65 +550,61 @@ void Game::resizeEventInternal(unsigned int width, unsigned int height)
     {
         _width = width;
         _height = height;
-        resizeEvent(width, height);
+        if (_inputListener) _inputListener->resizeEvent(width, height);
         if (_scriptTarget)
             _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, resizeEvent), width, height);
     }
+    Form::resizeEventInternal(width, height);
 }
 
 void Game::gestureSwipeEventInternal(int x, int y, int direction)
 {
-    gestureSwipeEvent(x, y, direction);
+    if (_inputListener) _inputListener->gestureSwipeEvent(x, y, direction);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gestureSwipeEvent), x, y, direction);
 }
 
 void Game::gesturePinchEventInternal(int x, int y, float scale)
 {
-    gesturePinchEvent(x, y, scale);
+    if (_inputListener) _inputListener->gesturePinchEvent(x, y, scale);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gesturePinchEvent), x, y, scale);
 }
 
 void Game::gestureTapEventInternal(int x, int y)
 {
-    gestureTapEvent(x, y);
+    if (_inputListener) _inputListener->gestureTapEvent(x, y);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gestureTapEvent), x, y);
 }
 
 void Game::gestureLongTapEventInternal(int x, int y, float duration)
 {
-    gestureLongTapEvent(x, y, duration);
+    if (_inputListener) _inputListener->gestureLongTapEvent(x, y, duration);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gestureLongTapevent), x, y, duration);
 }
 
 void Game::gestureDragEventInternal(int x, int y)
 {
-    gestureDragEvent(x, y);
+    if (_inputListener) _inputListener->gestureDragEvent(x, y);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gestureDragEvent), x, y);
 }
 
 void Game::gestureDropEventInternal(int x, int y)
 {
-    gestureDropEvent(x, y);
+    if (_inputListener) _inputListener->gestureDropEvent(x, y);
     if (_scriptTarget)
         _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gestureDropEvent), x, y);
 }
 
-void Game::gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad)
-{
-    gamepadEvent(evt, gamepad);
-    if (_scriptTarget)
-        _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gamepadEvent), evt, gamepad);
-}
-
-void Game::getArguments(int* argc, char*** argv) const
-{
-    Platform::getArguments(argc, argv);
-}
+//void Game::gamepadEventInternal(Gamepad::GamepadEvent evt, Gamepad* gamepad)
+//{
+//    if (_inputListener) _inputListener->gamepadEvent(evt, gamepad);
+//    if (_scriptTarget)
+//        _scriptTarget->fireScriptEvent<void>(GP_GET_SCRIPT_EVENT(GameScriptTarget, gamepadEvent), evt, gamepad);
+//}
 
 void Game::schedule(float timeOffset, TimeListener* timeListener, void* cookie)
 {
@@ -701,7 +615,7 @@ void Game::schedule(float timeOffset, TimeListener* timeListener, void* cookie)
 
 void Game::schedule(float timeOffset, const char* function)
 {
-    getScriptController()->schedule(timeOffset, function);
+    _scriptController->schedule(timeOffset, function);
 }
 
 void Game::clearSchedule()
@@ -766,36 +680,6 @@ void Game::loadConfig()
         {
             // Create an empty config
             _properties = new Properties();
-        }
-    }
-}
-
-void Game::loadGamepads()
-{
-    // Load virtual gamepads.
-    if (_properties)
-    {
-        // Check if there are any virtual gamepads included in the .config file.
-        // If there are, create and initialize them.
-        _properties->rewind();
-        Properties* inner = _properties->getNextNamespace();
-        while (inner != NULL)
-        {
-            std::string spaceName(inner->getNamespace());
-            // This namespace was accidentally named "gamepads" originally but we'll keep this check
-            // for backwards compatibility.
-            if (spaceName == "gamepads" || spaceName == "gamepad")
-            {
-                if (inner->exists("form"))
-                {
-                    const char* gamepadFormPath = inner->getString("form");
-                    GP_ASSERT(gamepadFormPath);
-                    Gamepad* gamepad = Gamepad::add(gamepadFormPath);
-                    GP_ASSERT(gamepad);
-                }
-            }
-
-            inner = _properties->getNextNamespace();
         }
     }
 }

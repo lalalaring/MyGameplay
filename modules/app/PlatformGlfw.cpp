@@ -1,15 +1,14 @@
 #ifndef GP_NO_PLATFORM
 #ifdef GP_GLFW
 
-#include "base/Base.h"
-#include "Platform.h"
-#include "FileSystem.h"
-#include "platform/Game.h"
-#include "Form.h"
-#include "math/Vector2.h"
-#include "ScriptController.h"
-#include <GL/wglew.h>
+#define WIN32_LEAN_AND_MEAN
+#define GLEW_STATIC
+#include <GL/glew.h>
+//#include <GL/wglew.h>
 #include <GLFW/glfw3.h>
+
+#include "Platform.h"
+#include "app/Game.h"
 
 
 GLFWwindow* window;
@@ -18,37 +17,9 @@ static bool __multiSampling = false;
 namespace gameplay
 {
 
-extern void print(const char* format, ...)
-{
-    va_list argptr;
-    va_start(argptr, format);
-    int sz = vfprintf(stderr, format, argptr);
-    if (sz > 0)
-    {
-        char* buf = new char[sz + 1];
-        vsprintf(buf, format, argptr);
-        buf[sz] = 0;
-        OutputDebugStringA(buf);
-        SAFE_DELETE_ARRAY(buf);
-    }
-    va_end(argptr);
-}
-
 extern int strcmpnocase(const char* s1, const char* s2)
 {
     return _strcmpi(s1, s2);
-}
-
-
-Platform::Platform(Game* game)
-    : _game(game)
-{
-}
-
-Platform::~Platform()
-{
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void error_callback(int error, const char* description)
@@ -61,14 +32,62 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
-
-
-Platform* Platform::create(Game* game)
+void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
-    GP_ASSERT(game);
+}
 
-    FileSystem::setResourcePath("./");
-    Platform* platform = new Platform(game);
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
+{
+    if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_MOVE, x, y, 0))
+    {
+        gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_MOVE, x, y, 0, true);
+    }
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_PRESS_LEFT_BUTTON, x, y, 0))
+            {
+                gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_PRESS, x, y, 0, true);
+            }
+        }
+        else {
+            if (!gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_RELEASE_LEFT_BUTTON, x, y, 0))
+            {
+                gameplay::Platform::touchEventInternal(gameplay::Touch::TOUCH_RELEASE, x, y, 0, true);
+            }
+        }
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (action == GLFW_PRESS) {
+            gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_PRESS_RIGHT_BUTTON, x, y, 0);
+        }
+        else {
+            gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_RELEASE_RIGHT_BUTTON, x, y, 0);
+        }
+    }
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    gameplay::Platform::mouseEventInternal(gameplay::Mouse::MOUSE_WHEEL, x, y, yoffset);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    gameplay::Platform::resizeEventInternal(width, height);
+}
+
+void Platform::init()
+{
+    //FileSystem::setResourcePath("./");
 
     glfwSetErrorCallback(error_callback);
 
@@ -80,7 +99,7 @@ Platform* Platform::create(Game* game)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -88,6 +107,12 @@ Platform* Platform::create(Game* game)
     }
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetCharCallback(window, character_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    //glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
@@ -99,19 +124,16 @@ Platform* Platform::create(Game* game)
         goto error;
     }
     glfwSwapInterval(1);
-
-    return platform;
-
+    return;
 error:
 
     exit(0);
-    return NULL;
 }
 
 
 int Platform::enterMessagePump()
 {
-    GP_ASSERT(_game);
+    Game* _game = Game::getInstance();
     if (_game->getState() != Game::RUNNING)
         _game->run();
 
@@ -139,7 +161,8 @@ int Platform::enterMessagePump()
 
 void Platform::signalShutdown() 
 {
-    // nothing to do  
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 bool Platform::canExit()
@@ -161,18 +184,6 @@ unsigned int Platform::getDisplayHeight()
     return height;
 }
 
-double Platform::getAbsoluteTime()
-{
-    double time = glfwGetTime();
-    return time * 1000;
-}
-
-void Platform::setAbsoluteTime(double time)
-{
-    //__timeAbsolute = time;
-    abort();
-}
-
 bool Platform::isVsync()
 {
     return false;
@@ -185,11 +196,6 @@ void Platform::setVsync(bool enable)
 void Platform::swapBuffers()
 {
     glfwSwapBuffers(window);
-}
-
-void Platform::sleep(long ms)
-{
-    Sleep(ms);
 }
 
 void Platform::setMultiSampling(bool enabled)
@@ -299,6 +305,7 @@ bool Platform::isMouseCaptured()
 
 void Platform::setCursorVisible(bool visible)
 {
+    if (visible)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
@@ -331,16 +338,40 @@ bool Platform::isGestureRegistered(Gesture::GestureEvent evt)
     return false;
 }
 
-void Platform::pollGamepadState(Gamepad* gamepad)
-{
 }
 
-void Platform::shutdownInternal()
-{
-    Game::getInstance()->shutdown();
-}
 
-}
-
+#ifndef _WINDOWS_
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
 #endif
-#endif
+
+using namespace gameplay;
+
+#if NO_MAIN
+/**
+ * Main entry point.
+ */
+extern "C" int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
+{
+    Game* game = Game::getInstance();
+    GP_ASSERT(game);
+    Platform::init();
+    int result = Platform::enterMessagePump();
+    Platform::signalShutdown();
+    return result;
+}
+#else 
+int main() {
+    Game* game = Game::getInstance();
+    GP_ASSERT(game);
+    Platform::init();
+    int result = Platform::enterMessagePump();
+    Platform::signalShutdown();
+    return result;
+}
+#endif //NO_MAIN
+
+
+#endif //GP_GLFW
+#endif //GP_NO_PLATFORM

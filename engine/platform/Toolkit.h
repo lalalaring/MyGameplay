@@ -29,6 +29,8 @@ public:
  */
 class Toolkit
 {
+protected:
+    static Toolkit* g_instance;
 public:
     static Toolkit* cur();
     
@@ -37,7 +39,7 @@ public:
      *
      * The default viewport is Rectangle(0, 0, Game::getWidth(), Game::getHeight()).
      */
-    virtual Rectangle& getViewport() = 0;
+    virtual const Rectangle& getViewport() const = 0;
 
     /**
      * Returns the game configuration object.
