@@ -1,9 +1,9 @@
-name = mygameplay
+name = mgpEngine
 summary = MGP engine
 outType = lib
 version = 1.0
-depends = glew 1.0, openal 1.22.2, bullet 3.24, freetype 2.4.12, libjson 7.6.1, ljs 1.0
-srcDirs = src/*
-incDir = src/
+depends = libjson 7.6.1
+srcDirs = base/,math/,3rd/,animation/,loader/,material/,objects/,platform/,scene/
+incDir = ./
 win32.extIncDirs = /C:/Program Files (x86)/Windows Kits/10/Include/10.0.18362.0/*
 win32.defines = UNICODE,GP_NO_LUA_BINDINGS,GP_USE_GAMEPAD
